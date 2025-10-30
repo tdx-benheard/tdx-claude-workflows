@@ -14,8 +14,9 @@ Ensure Claude Code has the following permissions enabled:
 ### TeamDynamix API Configuration
 - **MCP Server**: `mcp__tdx-api-mcp-prod` (handles authentication automatically)
 - **Report IDs**:
-  - Unassigned Team Tickets: 279607
-  - Assigned Team Tickets: 279612
+  - **Calcifer's Coders - Open Tickets**: 279612 (assigned to me)
+  - **Calcifer's Coders - Unassigned Tickets**: 279607
+  - **Current Interest Report**: 231599 (temporary)
 - **Key Functions**:
   - `tdx_run_report` - Run TeamDynamix reports
   - `tdx_get_ticket` - Get ticket details by ID
@@ -82,10 +83,26 @@ npm run lint             # ESLint + vue-tsc linting
 The ticket handling process has two main phases:
 
 ### Phase 1: Ticket Selection
-Choose one of three methods to select a ticket:
-1. **"Grab a new ticket"** - Get first unassigned ticket from report 279607
-2. **"Grab my ticket"** - Get first assigned-to-me ticket from report 279612
-3. **"Process ticket [ID]"** - Use specified ticket ID directly
+
+When the user requests to work on a ticket, determine which report to use:
+
+**Method 1: Specific Ticket ID**
+- User provides a ticket number directly (e.g., "28056844")
+- Skip report lookup and go directly to ticket processing
+
+**Method 2: Default Ticket Request**
+- User asks generically for "a ticket" without specifying a report
+- **First**, check report 279612 (Calcifer's Coders - Open Tickets) for tickets assigned to me in "Open" status
+- **If none found**, check report 279607 (Calcifer's Coders - Unassigned Tickets) for unassigned tickets in "Open" status
+
+**Method 3: Specific Report Name or ID**
+- User provides a report name or ID (e.g., "231599" or "Calcifer's Coders - Open Tickets")
+- Run the specified report and find first ticket in "Open" status (assigned to me OR unassigned only)
+
+**Filtering Rules (All Methods):**
+- Only select tickets with status "Open" (statusId = 2)
+- Only select tickets that are either unassigned OR assigned to me
+- Skip all other tickets
 
 ### Phase 2: Ticket Processing
 Once a ticket is selected, process it through these steps:
@@ -210,25 +227,34 @@ Once a ticket is selected, process it through these steps:
 
 ## Command Reference
 
-### "Grab a New Ticket"
-Selects the first unassigned ticket from report 279607, then processes it:
-1. Run `tdx_run_report` with reportId=279607
-2. Get first unassigned ticket details
+### User Provides Specific Ticket ID
+Example: "28056844" or "process ticket 28056844"
+
+1. Get ticket details via `tdx_get_ticket` with specified ticketId
+2. Verify ticket is assigned to me OR unassigned
 3. Execute Phase 2 (Ticket Processing) steps 1-8
 
-### "Grab My Ticket" or "Tackle My Ticket"
-Selects the first assigned-to-me ticket from report 279612, then processes it:
-1. Run `tdx_run_report` with reportId=279612
-2. Get first ticket assigned to current user
-3. Check ticket status:
-   - If status is NOT "Open" (statusId != 2): Skip (already in progress or completed), try next ticket
-   - If status is "Open": Continue with this ticket
-4. Execute Phase 2 (Ticket Processing) steps 1-8
+### User Requests "A Ticket" (Generic)
+Example: "give me a ticket" or "get me a ticket"
 
-### "Process Ticket [ID]"
-Processes a specific ticket by ID:
-1. Get ticket details via `tdx_get_ticket` with specified ticketId
-2. Execute Phase 2 (Ticket Processing) steps 1-8
+1. Run `tdx_run_report` with reportId=279612 (Calcifer's Coders - Open Tickets)
+2. Find first ticket with:
+   - StatusID = 2 (Open)
+   - Assigned to me
+3. If no tickets found in 279612, run reportId=279607 (Calcifer's Coders - Unassigned Tickets)
+4. Find first ticket with:
+   - StatusID = 2 (Open)
+   - Unassigned
+5. Execute Phase 2 (Ticket Processing) steps 1-8
+
+### User Specifies Report Name or ID
+Example: "231599" or "get ticket from Calcifer's Coders - Open Tickets"
+
+1. Run `tdx_run_report` with specified reportId
+2. Find first ticket with:
+   - StatusID = 2 (Open)
+   - Assigned to me OR unassigned
+3. Execute Phase 2 (Ticket Processing) steps 1-8
 
 ## Best Practices & Lessons Learned
 
