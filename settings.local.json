@@ -7,7 +7,9 @@
       "Bash(powershell \"Test-Path ''C:\\source\\TDDev\\enterprise\\TDAdmin\\MvcModels\\Tickets\\TicketAIAssistSettingsAgentModel.cs''\")",
       "Bash(powershell:*)",
       "Bash(git log:*)",
-      "Bash(git stash pop:*)"
+      "Bash(git stash pop:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": []

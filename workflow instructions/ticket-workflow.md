@@ -5,6 +5,17 @@ This document provides instructions for AI-assisted ticket handling within the T
 
 ## Prerequisites
 
+### Required MCP Server
+
+**IMPORTANT:** This workflow requires the TeamDynamix Tickets MCP server to be installed and configured.
+
+- **Repository**: https://github.com/tdx-benheard/tdx-api-tickets-mcp
+- **Server Name**: `tdx-api-tickets-mcp`
+- **Purpose**: Provides API access to TeamDynamix tickets, reports, and feed functionality
+- **Configuration**: Must be installed and enabled in Claude Code's MCP settings
+
+Without this MCP server, the ticket workflow cannot function as it depends on the API tools for fetching tickets, updating status, and posting to ticket feeds.
+
 ### Required Claude Code Permissions
 Ensure Claude Code has the following permissions enabled:
 - **File Operations**: Create, read, edit files and directories

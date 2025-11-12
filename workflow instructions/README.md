@@ -2,9 +2,15 @@
 
 This directory contains standardized workflow documentation for AI-assisted development.
 
+## External Dependencies
+
+**Note:** The ticket workflow requires the TeamDynamix Tickets MCP server:
+- **Repository**: https://github.com/tdx-benheard/tdx-api-tickets-mcp
+- Must be installed and configured in Claude Code for ticket handling functionality
+
 ## Files in This Directory
 
-- **[ticket-workflow.md](ticket-workflow.md)** - Complete workflow for AI-assisted ticket handling
+- **[ticket-workflow.md](ticket-workflow.md)** - Complete workflow for AI-assisted ticket handling (requires MCP server)
 - **[commits.md](commits.md)** - Commit message format and standards
 - **[branches.md](branches.md)** - Branch naming conventions
 - **[worktrees.md](worktrees.md)** - Git worktree management and location standards
