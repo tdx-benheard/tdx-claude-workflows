@@ -1,5 +1,9 @@
 # Commit Description Standards
 
+## Review
+Ask the user if they want a code review before creating a commit.
+Code review should focus on - errors, inefficiences, redundancies, readability.
+
 ## Required Format
 
 Every commit message MUST include the item type and number at the very end of the entire commit message (not on the first line):

@@ -9,14 +9,18 @@ This document provides instructions for AI-assisted ticket handling within the T
 Ensure Claude Code has the following permissions enabled:
 - **File Operations**: Create, read, edit files and directories
 - **Git Operations**: `git status`, `git checkout`, `git pull`, `git stash`, `git branch`, `git add`, `git commit`, `git worktree`, `git fetch`
-- **MCP Tools**: `mcp__tdx-api-mcp-prod__*` functions for TeamDynamix API access
+- **MCP Tools**: `mcp__tdx-api-tickets-mcp__*` functions for TeamDynamix API access (prod environment)
 
 ### TeamDynamix API Configuration
-- **MCP Server**: `mcp__tdx-api-mcp-prod` (handles authentication automatically)
+- **MCP Server**: `mcp__tdx-api-tickets-mcp` (handles authentication automatically, always use prod environment)
+- **Current User Info** (Ben Heard):
+  - **UID**: `5ec7a897-1405-ec11-b563-0050f2eef4a7`
+  - **Username**: `ben.heard@teamdynamix.com`
+  - **Note**: Retrieved via `mcp__tdx-api-tickets-mcp__tdx_get_current_user` on first session
 - **Report IDs**:
   - **Calcifer's Coders - Open Tickets**: 279612 (assigned to me)
   - **Calcifer's Coders - Unassigned Tickets**: 279607
-  - **Current Interest Report**: 231599 (temporary)
+  - **Open Beta Bugs**: 231599 (temporary)
 - **Key Functions**:
   - `tdx_run_report` - Run TeamDynamix reports
   - `tdx_get_ticket` - Get ticket details by ID
@@ -107,33 +111,59 @@ When the user requests to work on a ticket, determine which report to use:
 ### Phase 2: Ticket Processing
 Once a ticket is selected, process it through these steps:
 
-#### Step 1: Claim the Ticket
+#### Step 1: Present Ticket Summary
 - Get ticket details via `tdx_get_ticket` (if not already retrieved)
-- **Assign ticket to self** via `tdx_update_ticket` (only if not already assigned)
-- **Set status to "In Process"** via `tdx_update_ticket` with `statusId: 3`
+- Present a clear summary to the user:
+  - Ticket ID, title, priority, classification
+  - Key issue description
+  - Application and component affected
+- **Ask user if they want to proceed with investigating this ticket**
+- **If user declines**: Stop here, do nothing further
+- **If user confirms**: Continue to Step 2
 
-#### Step 2: Analyze the Ticket
-- Analyze description, requirements, and technical complexity
-- **Use the Task tool with subagent_type=Explore** for codebase exploration when:
-  - You need to find where functionality is implemented
-  - The issue requires understanding relationships between components
-  - You're searching for patterns across multiple files
-  - Example: "Find report save code and left navigation refresh behavior"
+#### Step 2: Light Investigation & Analysis
+- Do a **surface-level/light investigation** to understand the issue:
+  - Read the ticket description carefully
+  - Search for relevant code patterns (Grep/Glob for key terms)
+  - Identify likely problem areas without deep dive
+  - Look for similar patterns already solved in codebase
 - **Determine confidence level** (HIGH/MEDIUM/LOW):
-  - **HIGH**: Clear root cause, straightforward fix, can verify solution
-  - **MEDIUM**: Solvable but requires investigation or has some uncertainty
+  - **HIGH**: Clear root cause, straightforward fix, existing patterns to follow, can verify solution
+  - **MEDIUM**: Solvable but requires deeper investigation or has some uncertainty
   - **LOW**: Requires specialized tools, cannot verify fix, or missing critical context
-- **Report confidence assessment and summary to user** (DO NOT create temporary file yet)
+- **Present analysis to user** including:
+  - Issue description (what's happening)
+  - Root cause hypothesis
+  - Confidence level with reasoning
+  - Likely files/areas to modify
+- **Ask user if they want you to work on implementing the fix**
+- **If user declines**: Stop here, optionally add ticket comment explaining why
+- **If user confirms**: Continue to Step 3
 
-#### Step 3: Wait for User Confirmation
-- Wait for user to confirm whether to proceed with implementation
-- **If user declines**:
-  - Add feed entry via `tdx_add_ticket_feed` with analysis and reason for declining
-  - Ticket remains assigned for manual review
-  - Done
-- **If user confirms**: Continue to Step 4
+#### Step 3: Claim the Ticket
+- **Only after user confirms they want you to implement the fix**:
+  - Assign ticket to self via `tdx_update_ticket` with `responsibleUid`
+  - Add "clauded" tag via `tdx_add_ticket_tags` with `tags: ["clauded"]`
+- **DO NOT change status yet** - ticket remains in "Open" status until ready to implement
 
-#### Step 4: Branch Creation
+#### Step 4: Deep Investigation (If Needed)
+- **If confidence was HIGH**: Skip this step, proceed to Step 5
+- **If confidence was MEDIUM/LOW**: Do thorough investigation now
+  - **Use the Task tool with subagent_type=Explore** for codebase exploration:
+    - Find where functionality is implemented
+    - Understand relationships between components
+    - Search for patterns across multiple files
+    - Example: "Find report save code and left navigation refresh behavior"
+  - Refine understanding of root cause
+  - Update confidence level if needed
+  - Present refined analysis to user
+
+#### Step 5: Confirm Implementation Start
+- **If this step is reached, user has already confirmed in Step 2**
+- Set status to "In Process" (statusId: 3) via `tdx_update_ticket`
+- Continue to Step 6
+
+#### Step 6: Branch Creation
 - Branch name format: `feature/bheard/[TicketId]_[Summary]`
   - Use just the ticket ID number (no "Problem" or "CL" prefix)
   - Summary should be descriptive but concise (PascalCase, no spaces)
@@ -141,21 +171,21 @@ Once a ticket is selected, process it through these steps:
 - **Ask user if worktree should be created** using `AskUserQuestion` tool:
   - **If YES** (worktree authorized):
     ```bash
-    git fetch origin develop && git worktree add ../enterprise-claude-[TicketId] -b [BranchName] origin/develop
+    git fetch origin develop && git worktree add .claude/worktrees/[TicketId] -b [BranchName] origin/develop
     ```
     - **IMPORTANT**: Navigate to the correct path using Unix-style paths:
       ```bash
-      cd /c/source/tddev/enterprise-claude-[TicketId]/enterprise
+      cd .claude/worktrees/[TicketId]/enterprise
       ```
     - All work happens in this isolated workspace
-    - File paths must use the worktree location (e.g., `C:\source\tddev\enterprise-claude-28056844\enterprise\...`)
+    - File paths must use the worktree location (e.g., `C:\source\TDDev\enterprise\.claude\worktrees\28056844\enterprise\...`)
   - **If NO** (worktree not allowed):
     - Create and checkout new branch without worktree
     ```bash
     git fetch origin develop && git checkout -b [BranchName] origin/develop
     ```
 
-#### Step 5: Implement Solution
+#### Step 7: Implement Solution
 - Write code to fix the issue following existing patterns
 - **IMPORTANT**: Only edit source files, NEVER edit compiled/generated files:
   - Edit SCSS source files (e.g., `_links.scss`)
@@ -163,13 +193,13 @@ Once a ticket is selected, process it through these steps:
   - Build process will compile assets later
 - Test implementation as thoroughly as possible
 
-#### Step 6: Verify Solution
+#### Step 7: Verify Solution
 - Present changes to user
 - **Get user confirmation** that solution is acceptable before committing
 - Make any requested adjustments
-- **If user declines solution**: Return to Step 5 or abort
+- **If user declines solution**: Return to Step 6 or abort
 
-#### Step 7: Commit Changes
+#### Step 8: Commit Changes
 - **If using worktree**: Ensure you're in the worktree directory before staging/committing
 - Stage only files that fix the issue (source files only, no compiled assets)
 - **Do NOT stage**:
@@ -179,7 +209,7 @@ Once a ticket is selected, process it through these steps:
   - Compiled/generated files (CSS, JS bundles, etc.)
 - Commit with format (use HEREDOC syntax):
   ```bash
-  cd /c/source/tddev/enterprise-claude-[TicketId]/enterprise
+  cd .claude/worktrees/[TicketId]/enterprise
   git add [modified files]
   git commit -m "$(cat <<'EOF'
   [Brief title of fix]
@@ -198,9 +228,9 @@ Once a ticket is selected, process it through these steps:
   - Example: `Problem #28056844`
 - **If worktree was created**:
   - Return to main directory: `cd /c/source/tddev/enterprise`
-  - Clean up worktree: `git worktree remove ../enterprise-claude-[TicketId]`
+  - Clean up worktree: `git worktree remove .claude/worktrees/[TicketId]`
 
-#### Step 8: Document and Post to Ticket
+#### Step 9: Document Solution
 - Get the commit hash from the correct branch:
   ```bash
   git log feature/bheard/[TicketId]_[Summary] -1 --format='%H'
@@ -220,10 +250,11 @@ Once a ticket is selected, process it through these steps:
   - [Key area to test]
   - [Another key area]
   ```
-- **Show documentation to user first** for review before posting
-- **After user approval**, post documentation as feed entry via `tdx_add_ticket_feed` with `isPrivate: true`
-  - This preserves the documentation in the ticket for future reference
-  - The ticket feed is the permanent location for this documentation
+- **Show documentation to user first** for review
+- **Ask user to choose documentation method** using `AskUserQuestion` tool:
+  - **Option 1: Create File** - Create markdown file in `.claude/tickets/[TicketId]_[Summary].md` (matches branch name pattern)
+  - **Option 2: Post to Ticket** - Post as private feed entry via `tdx_add_ticket_feed` with `isPrivate: true`
+- After user selects method, save/post the documentation accordingly
 
 ## Command Reference
 
@@ -267,7 +298,7 @@ Example: "231599" or "get ticket from Calcifer's Coders - Open Tickets"
 - **Git Bash uses Unix-style paths**: `/c/source/tddev` not `C:\source\tddev`
 - **File operations use Windows paths**: `C:\source\tddev\...` for Read/Edit/Write tools
 - When working in worktrees, always verify you're in the correct directory with `pwd`
-- Navigate to the `enterprise` subdirectory within worktrees: `cd /c/source/tddev/enterprise-claude-[TicketId]/enterprise`
+- Navigate to the `enterprise` subdirectory within worktrees: `cd .claude/worktrees/[TicketId]/enterprise`
 
 ### Git Worktrees
 - Worktrees provide isolation and keep your main workspace clean
@@ -283,3 +314,12 @@ Example: "231599" or "get ticket from Calcifer's Coders - Open Tickets"
 - Use parallel tool calls when operations are independent (e.g., git status + git diff)
 - Use sequential chaining (`&&`) when later commands depend on earlier success
 - Keep temporary files minimal - only create when truly needed
+
+---
+
+## See Also
+
+- **[branches.md](branches.md)** - Branch naming conventions
+- **[commits.md](commits.md)** - Commit message standards
+- **[worktrees.md](worktrees.md)** - Git worktree management details
+- **[build.md](build.md)** - Build instructions for testing changes
