@@ -1,18 +1,121 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git ls-tree:*)",
-      "Bash(powershell \"Get-Content ''C:\\source\\TDDev\\enterprise\\TDNext\\web.config'' | Select-String -Pattern ''customErrors'' -Context 0,1\")",
+      "Bash(powershell -Command:*)",
       "Bash(dir:*)",
-      "Bash(powershell \"Test-Path ''C:\\source\\TDDev\\enterprise\\TDAdmin\\MvcModels\\Tickets\\TicketAIAssistSettingsAgentModel.cs''\")",
+      "mcp__tdx-api-tickets-mcp__tdx_get_ticket",
+      "mcp__tdx-api-tickets-mcp__tdx_run_report",
+      "mcp__tdx-api-tickets-mcp__tdx_search_reports",
+      "mcp__tdx-api-tickets-mcp__tdx_get_ticket_feed",
+      "Bash(tdx-mcp tdx_search_reports:*)",
+      "Bash(mcp__tdx-api-tickets-mcp__tdx_search_reports:*)",
+      "mcp__tdx-tickets-mcp__tdx_get_ticket",
+      "mcp__tdx-tickets-mcp__tdx_search_tickets",
+      "mcp__tdx-tickets-mcp__tdx_list_reports",
+      "mcp__tdx-tickets-mcp__tdx_search_reports",
+      "mcp__tdx-tickets-mcp__tdx_get_attachment",
+      "mcp__tdx-tickets-mcp__tdx_run_report",
+      "Bash(\"C:\\Program Files\\Microsoft Visual Studio\\2022\\Professional\\MSBuild\\Current\\Bin\\MSBuild.exe\" TDNext.csproj /t:Build /p:Configuration=Debug /v:minimal)",
+      "Bash(Select-String -Pattern \"(error|warning|succeeded|failed)\" -Context 0,2)",
+      "Bash(\"C:\\Program Files\\Microsoft Visual Studio\\2022\\Professional\\MSBuild\\Current\\Bin\\MSBuild.exe\" ./TDNext.csproj -t:Build -p:Configuration=Debug -v:minimal)",
+      "Bash(curl *http://localhost/TDDev/*)",
+      "Bash(curl -s *http://localhost/TDDev/*)",
+      "Bash(curl:*)",
+      "Bash(powershell -File .claude/prewarm-auth.ps1*)",
       "Bash(powershell:*)",
-      "Bash(git log:*)",
-      "Bash(git stash pop:*)",
-      "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "mcp__tdx-tickets-mcp__tdx_list_ticket_tasks",
+      "mcp__tdx-tickets-mcp__tdx_update_ticket_task",
+      "mcp__tdx-tickets-mcp__tdx_update_ticket",
+      "mcp__tdx-tickets-mcp__tdx_add_ticket_feed",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []
   },
-  "enableAllProjectMcpServers": true
+  "enableAllProjectMcpServers": true,
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash(*build.bat*)",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'BUILD PROTOCOL VIOLATION: Command contains build.bat. You must read .claude/claude-workflows/build.md and follow those instructions exactly.' >&2 && exit 2"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash(*build.ps1*)",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'BUILD PROTOCOL VIOLATION: Command contains build.ps1. You must read .claude/claude-workflows/build.md and follow those instructions exactly.' >&2 && exit 2"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash(*msbuild*)",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'BUILD PROTOCOL VIOLATION: Command contains msbuild. You must read .claude/claude-workflows/build.md and follow those instructions exactly.' >&2 && exit 2"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash(*MSBuild*)",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'BUILD PROTOCOL VIOLATION: Command contains MSBuild. You must read .claude/claude-workflows/build.md and follow those instructions exactly.' >&2 && exit 2"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash(git add -A*)",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'GIT ADD PROTOCOL VIOLATION: git add -A adds gitignored files like .claude/. Use specific file paths instead.' >&2 && exit 2"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash(git add .*)",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'GIT ADD PROTOCOL VIOLATION: git add . adds gitignored files like .claude/. Use specific file paths instead.' >&2 && exit 2"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash(git checkout -b*)",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'GIT CHECKOUT PROTOCOL: git checkout -b will create AND switch to a new branch. You must ask the user for confirmation before proceeding. If user declines, use git branch <name> to create without switching.' >&2 && exit 2"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash(git checkout *)",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'GIT CHECKOUT PROTOCOL: git checkout will switch to an existing branch. You must ask the user for confirmation before proceeding.' >&2 && exit 2"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash(git worktree add*)",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'GIT WORKTREE PROTOCOL VIOLATION: You must read .claude/claude-workflows/worktrees.md and follow those instructions exactly for proper naming conventions.' >&2 && exit 2"
+          }
+        ]
+      }
+    ]
+  }
 }
