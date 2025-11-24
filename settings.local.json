@@ -27,7 +27,8 @@
       "mcp__tdx-tickets-mcp__tdx_update_ticket_task",
       "mcp__tdx-tickets-mcp__tdx_update_ticket",
       "mcp__tdx-tickets-mcp__tdx_add_ticket_feed",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(cat:*)"
     ],
     "deny": [],
     "ask": []
