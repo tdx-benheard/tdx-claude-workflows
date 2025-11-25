@@ -1,0 +1,7 @@
+# Temporary directories
+worktrees/
+temp/
+tickets/
+
+# Windows reserved device names that may be created accidentally
+nul
