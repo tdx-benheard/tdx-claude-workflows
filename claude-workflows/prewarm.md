@@ -6,7 +6,9 @@
 
 ## Pre-warming Instructions for Claude Code
 
-**After building any web project, automatically run pre-warm for that project:**
+**After building any web project with C# changes (MSBuild/dotnet build), automatically run pre-warm for that project:**
+
+**⚠️ IMPORTANT:** Only run prewarm after **C# builds** (MSBuild/dotnet build). Do NOT run after frontend-only builds (npm run builddev, npm run scss:compile, Vue builds).
 
 ### Project Mapping:
 - Built **TDNext** → Prewarm TDNext (automatically also prewarms TDWorkManagement)

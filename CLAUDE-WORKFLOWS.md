@@ -22,6 +22,8 @@ This file is an **index of workflow instructions for Claude Code** (the AI assis
 - **[worktrees.md](claude-workflows/worktrees.md)** - Worktree management
 - **[build.md](claude-workflows/build.md)** - Build commands (**overrides base CLAUDE.md**)
 - **[cherry-pick.md](claude-workflows/cherry-pick.md)** - Release cherry-picking
+- **[review.md](claude-workflows/review.md)** - Code review standards and workflow
+- **[sync-settings.md](claude-workflows/sync-settings.md)** - Sync .claude directory with remote git repository
 
 ## Variables Used
 

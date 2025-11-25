@@ -65,14 +65,24 @@ powershell -Command "& 'C:\Program Files\Microsoft Visual Studio\2022\Profession
 **CRITICAL:** Must wrap in `powershell -Command` with single quotes around path. Direct bash invocation strips `/t:` and `/p:` switches.
 
 ## TDWorkManagement (ASP.NET Core + TypeScript + Vue)
-```bash
-# All-in-one: From enterprise dir
-dotnet build TDWorkManagement\TDWorkManagement.csproj
 
-# Individual components if needed:
-cd TDWorkManagement && npm run builddev          # TypeScript only
-cd TDWorkManagement\VueLibrarySource && npm run builddev  # Vue only
-cd TDWorkManagement && npm run scss:compile      # Styles only
+**⚠️ For TypeScript/SCSS changes only (PREFERRED - faster):**
+```bash
+# TypeScript changes: From enterprise dir
+cd TDWorkManagement && npm run builddev
+
+# SCSS changes: From enterprise dir
+cd TDWorkManagement && npm run scss:compile
+
+# Vue changes: From enterprise dir
+cd TDWorkManagement\VueLibrarySource && npm run builddev
+```
+**Do NOT use MSBuild/dotnet build for frontend-only changes** - it's slower and unnecessary.
+
+**For C# changes or full rebuild:**
+```bash
+# From enterprise dir
+dotnet build TDWorkManagement\TDWorkManagement.csproj
 ```
 **Auto-runs:** .csproj MSBuild targets handle Vue/TS builds automatically (uses timestamp files to skip if unchanged)
 
@@ -93,7 +103,17 @@ del /f TDWorkManagement\VueLibrarySource\node_modules\vuelibrarysource.timestamp
 
 ## 🚨 CRITICAL: Post-Build Pre-warming 🚨
 
-**⚠️ MANDATORY:** After EVERY successful build, immediately run: `powershell -File .claude/prewarm-auth.ps1 -Project "{ProjectName}"`
+**⚠️ MANDATORY:** After EVERY successful **C# build** (MSBuild/dotnet build), immediately run: `powershell -File .claude/prewarm-auth.ps1 -Project "{ProjectName}"`
+
+**When prewarm is needed:**
+- After MSBuild of web projects (TDNext, TDClient, TDAdmin, TDWorkManagement C# project)
+- After `dotnet build` commands
+- After full solution builds
+
+**When prewarm is NOT needed:**
+- After `npm run builddev` (TypeScript only)
+- After `npm run scss:compile` (SCSS only)
+- After Vue builds in VueLibrarySource
 
 **See [prewarm.md](prewarm.md) for complete details.**
 

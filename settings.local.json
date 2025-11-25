@@ -28,16 +28,35 @@
       "mcp__tdx-tickets-mcp__tdx_update_ticket",
       "mcp__tdx-tickets-mcp__tdx_add_ticket_feed",
       "Bash(git add:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(cd .. && powershell -Command \"& 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Professional\\MSBuild\\Current\\Bin\\MSBuild.exe' Monorepo.sln /t:Build /p:Configuration=Debug /m /v:minimal\")",
+      "Bash(git merge-base:*)",
+      "Bash(git merge:*)",
+      "Bash(Select-String -Pattern \"(ConfigurableSessionTimeoutModule|Server Error|DOCTYPE)\")",
+      "Bash(npm run builddev:*)",
+      "Bash(sed:*)",
+      "Bash(find:*)",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": []
   },
   "enableAllProjectMcpServers": true,
   "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Bash(*MSBuild.exe*)",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'BUILD COMPLETE. MANDATORY NEXT STEP: Execute prewarming instructions (.claude/claude-workflows/prewarm.md)' >&2 && exit 1"
+          }
+        ]
+      }
+    ],
     "PreToolUse": [
       {
-        "matcher": "Bash(*build.bat*)",
+        "matcher": "Bash(build.bat*)",
         "hooks": [
           {
             "type": "command",
@@ -114,6 +133,15 @@
           {
             "type": "command",
             "command": "echo 'GIT WORKTREE PROTOCOL VIOLATION: You must read .claude/claude-workflows/worktrees.md and follow those instructions exactly for proper naming conventions.' >&2 && exit 2"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash(git commit*)",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'GIT COMMIT PROTOCOL: You must ask the user for explicit confirmation before committing. Present the commit message and get approval first.' >&2 && exit 2"
           }
         ]
       }
