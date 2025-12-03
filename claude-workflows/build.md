@@ -93,7 +93,12 @@ dotnet build TDWorkManagement\TDWorkManagement.csproj
 powershell -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://aka.ms/install-artifacts-credprovider.ps1'))"
 ```
 
-**Locked files:** IIS app pools auto-stopped/started during build. If fails, manually: `iisreset /stop`
+**Locked files:** IIS app pools auto-stopped/started during build. If locked DLL error occurs:
+```bash
+# From enterprise dir - touch web.config to force IIS app pool recycle
+echo. >> TDWorkManagement\web.config
+# Then retry build
+```
 
 **Force rebuild TDWorkManagement:** Delete timestamps:
 ```bash
@@ -103,7 +108,7 @@ del /f TDWorkManagement\VueLibrarySource\node_modules\vuelibrarysource.timestamp
 
 ## 🚨 CRITICAL: Post-Build Pre-warming 🚨
 
-**⚠️ MANDATORY:** After EVERY successful **C# build** (MSBuild/dotnet build), immediately run: `powershell -File .claude/prewarm-auth.ps1 -Project "{ProjectName}"`
+**⚠️ MANDATORY:** After EVERY successful **C# build** (MSBuild/dotnet build), immediately run: `powershell -File .claude/claude-workflows/prewarm-auth.ps1 -Project "{ProjectName}"`
 
 **When prewarm is needed:**
 - After MSBuild of web projects (TDNext, TDClient, TDAdmin, TDWorkManagement C# project)
