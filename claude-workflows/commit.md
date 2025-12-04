@@ -17,21 +17,17 @@ Extract with: `git branch --show-current`
 
 ## Required Format
 ```
-Brief description of what was done
+Type #Number - Brief description of what was done
 
 Optional: Additional details explaining why/how.
-
-Type #Number
 ```
-- Item type + number at **very end** (not first line)
+- Item type + number on **first line** with brief description
 - NO square brackets around type
 - Item types: Problem, Feature, Enhancement, Task
 
 ## Example
 ```
-Fix accessibility in filter dropdown
+Problem #29221965 - Fix accessibility in filter dropdown
 
 Update keyboard navigation and screen reader support.
-
-Problem #29221965
 ```
