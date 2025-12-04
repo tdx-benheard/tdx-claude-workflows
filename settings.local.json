@@ -6,7 +6,8 @@
       "Bash(powershell -File .claude/prewarm-auth.ps1 -Project \"TDNext\")",
       "Bash(powershell -File .claude/prewarm-auth.ps1 -Project \"TDClient\")",
       "Bash(ls:*)",
-      "Bash(powershell:*)"
+      "Bash(powershell:*)",
+      "mcp__tdx-tickets-mcp__tdx_get_ticket"
     ],
     "deny": [],
     "ask": []
