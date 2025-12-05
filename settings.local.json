@@ -9,7 +9,8 @@
       "Bash(powershell:*)",
       "Bash(curl:*)",
       "mcp__tdx-tickets-mcp__tdx_get_ticket",
-      "Bash(Select-Object -First 10)"
+      "Bash(Select-Object -First 10)",
+      "Bash(npm run builddev:*)"
     ],
     "deny": [],
     "ask": []
