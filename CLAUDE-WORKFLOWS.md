@@ -41,9 +41,18 @@ Generic placeholders (user-specific values defined in `CLAUDE.local.md`):
 
 ## Quick Reference
 
+### Modifying .claude Files
+**⚠️ CRITICAL:** Before making ANY changes to files in the `.claude/` directory:
+1. **First sync** - Run the sync workflow (see [sync-settings.md](claude-workflows/sync-settings.md)) to pull latest changes
+2. **Make your changes** - Edit the files as needed
+3. **Commit and push** - Run sync workflow again to commit and push your changes
+
+This prevents merge conflicts and ensures all changes are tracked in the remote repository.
+
 ### Git Repository Rules
-- `.claude/` is gitignored - **NEVER commit to repo**
-- If staged accidentally: `git reset .claude/`
+- `.claude/` is gitignored from the main repo - **NEVER commit to main repo**
+- The `.claude/` directory has its **own separate git repository** for syncing settings
+- If staged accidentally in main repo: `git reset .claude/`
 
 ### PowerShell Commands
 - **Prefer**: Script files (`powershell -File temp.ps1`)

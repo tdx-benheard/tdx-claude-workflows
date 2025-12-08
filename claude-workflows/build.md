@@ -118,7 +118,12 @@ del /f TDWorkManagement\VueLibrarySource\node_modules\vuelibrarysource.timestamp
 
 ## 🚨 CRITICAL: Post-Build Pre-warming 🚨
 
-**⚠️ MANDATORY:** After EVERY successful **C# build** (MSBuild/dotnet build), immediately run: `powershell -File .claude/claude-workflows/prewarm-auth.ps1 -Project "{ProjectName}"`
+**⚠️ MANDATORY:** After EVERY successful **C# build** (MSBuild/dotnet build), immediately run prewarm.
+
+**⚠️ BASH PATH HANDLING:** The Bash tool strips backslashes from paths. You MUST wrap in `powershell -Command` with a `cd` first:
+```bash
+powershell -Command "cd C:\source\TDDev\enterprise; .\.claude\claude-workflows\prewarm-auth.ps1 -Project 'TDWorkManagement'"
+```
 
 **When prewarm is needed:**
 - After MSBuild of web projects (TDNext, TDClient, TDAdmin, TDWorkManagement C# project)

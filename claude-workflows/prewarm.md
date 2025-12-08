@@ -19,7 +19,7 @@
 
 ### Specific Page Prewarming:
 **⚠️ IMPORTANT:** If working on a specific page/feature, pass the full URL to `-SpecificPage` parameter:
-- Example: `powershell -File .claude/prewarm-auth.ps1 -Project "TDNext" -SpecificPage "http://localhost/TDDev/TDNext/Apps/274/Assets/AssetExportQRCodes.aspx?AssetIDs=1,2,3"`
+- Example: `powershell -Command "cd C:\source\TDDev\enterprise; .\.claude\claude-workflows\prewarm-auth.ps1 -Project 'TDNext' -SpecificPage 'http://localhost/TDDev/TDNext/Apps/274/Assets/AssetExportQRCodes.aspx?AssetIDs=1,2,3'"`
 - This ensures the specific page is compiled and ready for immediate testing
 
 ## 🚨 EXECUTION REQUIREMENTS 🚨
@@ -30,27 +30,29 @@
 3. **30-Second Timeout:** Use `timeout: 30000` in Bash tool
 4. **Non-Blocking:** Do NOT wait for prewarm to complete - proceed with other tasks immediately
 
+**⚠️ BASH PATH HANDLING:** The Bash tool strips backslashes from paths. You MUST wrap in `powershell -Command` with a `cd` first.
+
 **Command Format:**
 ```bash
-powershell -File .claude/prewarm-auth.ps1 -Project "{ProjectName}" [-SpecificPage "{FullURL}"]
+powershell -Command "cd C:\source\TDDev\enterprise; .\.claude\claude-workflows\prewarm-auth.ps1 -Project '{ProjectName}'"
 ```
 
 **Examples:**
 ```bash
 # After building TDNext
-powershell -File .claude/prewarm-auth.ps1 -Project "TDNext"
+powershell -Command "cd C:\source\TDDev\enterprise; .\.claude\claude-workflows\prewarm-auth.ps1 -Project 'TDNext'"
 
 # After building TDClient
-powershell -File .claude/prewarm-auth.ps1 -Project "TDClient"
+powershell -Command "cd C:\source\TDDev\enterprise; .\.claude\claude-workflows\prewarm-auth.ps1 -Project 'TDClient'"
 
 # After building TDAdmin
-powershell -File .claude/prewarm-auth.ps1 -Project "TDAdmin"
+powershell -Command "cd C:\source\TDDev\enterprise; .\.claude\claude-workflows\prewarm-auth.ps1 -Project 'TDAdmin'"
 
 # After building TDWorkManagement
-powershell -File .claude/prewarm-auth.ps1 -Project "TDWorkManagement"
+powershell -Command "cd C:\source\TDDev\enterprise; .\.claude\claude-workflows\prewarm-auth.ps1 -Project 'TDWorkManagement'"
 
 # With specific page you're working on
-powershell -File .claude/prewarm-auth.ps1 -Project "TDNext" -SpecificPage "http://localhost/TDDev/TDNext/Apps/274/Assets/AssetExportQRCodes.aspx?AssetIDs=7874,7726,6600"
+powershell -Command "cd C:\source\TDDev\enterprise; .\.claude\claude-workflows\prewarm-auth.ps1 -Project 'TDNext' -SpecificPage 'http://localhost/TDDev/TDNext/Apps/274/Assets/AssetExportQRCodes.aspx?AssetIDs=7874,7726,6600'"
 ```
 
 **Important:** After starting the prewarm (in background), immediately continue with other tasks. Do not check status or wait for completion.
