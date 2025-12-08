@@ -5,7 +5,7 @@ param(
 )
 
 # Auto-detect virtual directory from active web.config
-$webConfigPath = "$PSScriptRoot/../$Project/web.config"
+$webConfigPath = "$PSScriptRoot/../../$Project/web.config"
 if (Test-Path $webConfigPath) {
     $webConfigContent = Get-Content $webConfigPath -Raw
     if ($webConfigContent -match 'BaseHttpPath.*?value="/(.*?)/' ) {
@@ -50,23 +50,38 @@ try {
 
     Write-Host "Authenticated successfully" -ForegroundColor Green
 
-    # Prewarm main pages based on project
-    Write-Host "Prewarming $Project..." -ForegroundColor Cyan
-    $null = Invoke-WebRequest -Uri "$baseUrl/" -WebSession $session -UseBasicParsing -TimeoutSec 10 -ErrorAction SilentlyContinue
+    # Prewarm specific page first if provided
+    if ($SpecificPage) {
+        Write-Host "Prewarming specific page: $SpecificPage" -ForegroundColor Cyan
+        $null = Invoke-WebRequest -Uri $SpecificPage -WebSession $session -UseBasicParsing -TimeoutSec 10 -ErrorAction SilentlyContinue
+    }
+    # Only prewarm default pages if no specific page was provided
+    else {
+        # Prewarm main pages based on project
+        Write-Host "Prewarming $Project..." -ForegroundColor Cyan
+        $null = Invoke-WebRequest -Uri "$baseUrl/" -WebSession $session -UseBasicParsing -TimeoutSec 10 -ErrorAction SilentlyContinue
 
-    # Different apps have different main endpoints
-    switch ($Project) {
-        "TDNext" {
-            $null = Invoke-WebRequest -Uri "$baseUrl/Home/Desktop" -WebSession $session -UseBasicParsing -TimeoutSec 10 -ErrorAction SilentlyContinue
-        }
-        "TDClient" {
-            $null = Invoke-WebRequest -Uri "$baseUrl/Home/Desktop" -WebSession $session -UseBasicParsing -TimeoutSec 10 -ErrorAction SilentlyContinue
-        }
-        "TDAdmin" {
-            $null = Invoke-WebRequest -Uri "$baseUrl/Home" -WebSession $session -UseBasicParsing -TimeoutSec 10 -ErrorAction SilentlyContinue
-        }
-        "TDWorkManagement" {
-            $null = Invoke-WebRequest -Uri "$baseUrl/Home/Index" -WebSession $session -UseBasicParsing -TimeoutSec 10 -ErrorAction SilentlyContinue
+        # Different apps have different main endpoints
+        switch ($Project) {
+            "TDNext" {
+                $null = Invoke-WebRequest -Uri "$baseUrl/Home/Desktop" -WebSession $session -UseBasicParsing -TimeoutSec 10 -ErrorAction SilentlyContinue
+                # Prewarm ticket pages
+                Write-Host "Prewarming ticket detail page..." -ForegroundColor Cyan
+                $null = Invoke-WebRequest -Uri "$baseUrl/Apps/122/Tickets/TicketDet?TicketID=550001" -WebSession $session -UseBasicParsing -TimeoutSec 10 -ErrorAction SilentlyContinue
+                Write-Host "Prewarming ticket edit page..." -ForegroundColor Cyan
+                $null = Invoke-WebRequest -Uri "$baseUrl/Apps/627/Tickets/Edit?TicketID=555664" -WebSession $session -UseBasicParsing -TimeoutSec 10 -ErrorAction SilentlyContinue
+                Write-Host "Prewarming ticket search page..." -ForegroundColor Cyan
+                $null = Invoke-WebRequest -Uri "$baseUrl/Apps/627/Tickets/TicketSearch?CMPNTID=9" -WebSession $session -UseBasicParsing -TimeoutSec 10 -ErrorAction SilentlyContinue
+            }
+            "TDClient" {
+                $null = Invoke-WebRequest -Uri "$baseUrl/Home/Desktop" -WebSession $session -UseBasicParsing -TimeoutSec 10 -ErrorAction SilentlyContinue
+            }
+            "TDAdmin" {
+                $null = Invoke-WebRequest -Uri "$baseUrl/Home" -WebSession $session -UseBasicParsing -TimeoutSec 10 -ErrorAction SilentlyContinue
+            }
+            "TDWorkManagement" {
+                $null = Invoke-WebRequest -Uri "$baseUrl/Home/Index" -WebSession $session -UseBasicParsing -TimeoutSec 10 -ErrorAction SilentlyContinue
+            }
         }
     }
 
@@ -76,12 +91,6 @@ try {
         $wmUrl = "http://localhost/$virtualDir/TDWorkManagement"
         $null = Invoke-WebRequest -Uri "$wmUrl/" -WebSession $session -UseBasicParsing -TimeoutSec 10 -ErrorAction SilentlyContinue
         $null = Invoke-WebRequest -Uri "$wmUrl/Home/Index" -WebSession $session -UseBasicParsing -TimeoutSec 10 -ErrorAction SilentlyContinue
-    }
-
-    # Prewarm specific page if provided
-    if ($SpecificPage) {
-        Write-Host "Prewarming specific page: $SpecificPage" -ForegroundColor Cyan
-        $null = Invoke-WebRequest -Uri $SpecificPage -WebSession $session -UseBasicParsing -TimeoutSec 10 -ErrorAction SilentlyContinue
     }
 
     Write-Host "Prewarm complete!" -ForegroundColor Green

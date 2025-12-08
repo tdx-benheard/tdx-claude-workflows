@@ -81,9 +81,10 @@ cd TDWorkManagement\VueLibrarySource && npm run builddev
 
 **For C# changes or full rebuild:**
 ```bash
-# From enterprise dir
-dotnet build TDWorkManagement\TDWorkManagement.csproj
+# From enterprise dir - ALWAYS touch web.config first to prevent DLL lock issues
+powershell -Command "(Get-Item TDWorkManagement/web.config).LastWriteTime = Get-Date; Start-Sleep -Seconds 5; dotnet build TDWorkManagement/TDWorkManagement.csproj"
 ```
+**Why touch web.config first:** Triggers IIS app pool recycle to release DLL locks before build starts
 **Auto-runs:** .csproj MSBuild targets handle Vue/TS builds automatically (uses timestamp files to skip if unchanged)
 
 ## Troubleshooting
@@ -93,11 +94,20 @@ dotnet build TDWorkManagement\TDWorkManagement.csproj
 powershell -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://aka.ms/install-artifacts-credprovider.ps1'))"
 ```
 
-**Locked files:** IIS app pools auto-stopped/started during build. If locked DLL error occurs:
+**Locked DLL files (w3wp.exe holds TDWorkManagement.dll):**
+When build fails with "The file is locked by: w3wp.exe", use this workaround to force app pool recycle:
 ```bash
-# From enterprise dir - touch web.config to force IIS app pool recycle
-echo. >> TDWorkManagement\web.config
-# Then retry build
+# Touch web.config to trigger IIS recycle, wait 5 seconds, then rebuild
+powershell -Command "(Get-Item TDWorkManagement\web.config).LastWriteTime = Get-Date; Start-Sleep -Seconds 5; dotnet build TDWorkManagement\TDWorkManagement.csproj"
+```
+**Why this works:** Modifying web.config timestamp triggers IIS to automatically recycle the app pool, releasing the DLL lock.
+
+**Alternative (requires admin):** Kill the process or stop app pools manually:
+```bash
+# Run PowerShell as Administrator, then:
+Stop-Process -Id <PID> -Force
+# OR stop app pools:
+C:\Windows\System32\inetsrv\appcmd stop apppool /apppool.name:TDWorkManagement
 ```
 
 **Force rebuild TDWorkManagement:** Delete timestamps:

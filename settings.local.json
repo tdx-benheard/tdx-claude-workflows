@@ -7,7 +7,10 @@
       "Bash(powershell -File .claude/prewarm-auth.ps1 -Project \"TDClient\")",
       "Bash(ls:*)",
       "Bash(powershell:*)",
-      "mcp__tdx-tickets-mcp__tdx_get_ticket"
+      "Bash(curl:*)",
+      "mcp__tdx-tickets-mcp__tdx_get_ticket",
+      "Bash(Select-Object -First 10)",
+      "Bash(npm run builddev:*)"
     ],
     "deny": [],
     "ask": []
