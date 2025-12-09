@@ -15,7 +15,7 @@
 - Built **TDClient** → Prewarm TDClient
 - Built **TDAdmin** → Prewarm TDAdmin
 - Built **TDWorkManagement** → Prewarm TDWorkManagement
-- Built **full solution** → Prewarm TDNext (which includes TDWorkManagement)
+- Built **full solution** → Prewarm TDNext, TDClient, TDAdmin, and TDWorkManagement (all in parallel)
 
 ### Specific Page Prewarming:
 **⚠️ IMPORTANT:** If working on a specific page/feature, pass the full URL to `-SpecificPage` parameter:

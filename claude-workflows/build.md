@@ -128,7 +128,7 @@ powershell -Command "cd C:\source\TDDev\enterprise; .\.claude\claude-workflows\p
 **When prewarm is needed:**
 - After MSBuild of web projects (TDNext, TDClient, TDAdmin, TDWorkManagement C# project)
 - After `dotnet build` commands
-- After full solution builds
+- After full solution builds → Prewarm TDNext, TDClient, TDAdmin, and TDWorkManagement (all in parallel)
 
 **When prewarm is NOT needed:**
 - After `npm run builddev` (TypeScript only)
