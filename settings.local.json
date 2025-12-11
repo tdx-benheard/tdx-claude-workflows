@@ -10,7 +10,13 @@
       "Bash(curl:*)",
       "mcp__tdx-tickets-mcp__tdx_get_ticket",
       "Bash(Select-Object -First 10)",
-      "Bash(npm run builddev:*)"
+      "Bash(npm run builddev:*)",
+      "Bash(dotnet build:*)",
+      "Bash(git fetch:*)",
+      "Bash(git merge:*)",
+      "Bash(git pull:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": []

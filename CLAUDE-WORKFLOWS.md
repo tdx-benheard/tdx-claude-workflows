@@ -24,6 +24,7 @@ This file is an **index of workflow instructions for Claude Code** (the AI assis
 - **[cherry-pick.md](claude-workflows/cherry-pick.md)** - Release cherry-picking
 - **[review.md](claude-workflows/review.md)** - Code review standards and workflow
 - **[sync-settings.md](claude-workflows/sync-settings.md)** - Sync .claude directory with remote git repository
+- **[temp-files.md](claude-workflows/temp-files.md)** - Temporary files (test files, bug reproduction, etc.)
 
 ## Variables Used
 
