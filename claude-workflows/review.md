@@ -12,6 +12,7 @@ Always review for:
 - **Risks** - Security vulnerabilities, data loss potential, breaking changes
 - **Redundancies** - Duplicate code, unnecessary repetition
 - **Inefficiencies** - Performance issues, suboptimal algorithms, resource waste
+- **Readability** - Code clarity, maintainability, documentation quality
 
 ## Workflow
 
@@ -39,6 +40,7 @@ Always review for:
    ### 🔒 Risks: [None found OR list with file:line]
    ### ♻️ Redundancies: [None found OR list]
    ### ⚡ Inefficiencies: [None found OR list]
+   ### 📖 Readability: [Score/10 with suggestions for improvement]
 
    ### Overall: [✅ Ready | ⚠️ Needs attention | ❌ Must fix]
    ```

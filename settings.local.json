@@ -15,8 +15,9 @@
       "Bash(git fetch:*)",
       "Bash(git merge:*)",
       "Bash(git pull:*)",
-      "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(npm run builddev:TDWorkManagement:*)",
+      "Bash(git worktree add:*)",
+      "mcp__tdx-tickets-mcp__tdx_search_tickets"
     ],
     "deny": [],
     "ask": []
