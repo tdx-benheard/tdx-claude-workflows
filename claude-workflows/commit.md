@@ -7,6 +7,9 @@
 2. **Draft:** Create commit message following format below
 3. **🚨 MUST GET USER APPROVAL 🚨** - Show message, ask "Would you like me to proceed with this commit?", wait for confirmation
 4. **Execute:** Only after approval, run git commit
+5. **Push:** After successful commit, ask user "Would you like me to push this branch to remote?"
+   - If yes: Run `git push -u origin <branch-name>`
+   - If no: Skip and continue
 
 ## Code Review
 See **[review.md](review.md)** for complete code review workflow and standards.
