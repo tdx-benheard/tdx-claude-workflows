@@ -19,8 +19,11 @@
       "Bash(git worktree add:*)",
       "mcp__tdx-tickets-mcp__tdx_search_tickets",
       "Bash(cat:*)",
+      "Bash(git log:*)",
       "Bash(grep:*)",
-      "Bash(git stash:*)"
+      "mcp__tdx-tickets-mcp__tdx_update_ticket",
+      "mcp__tdx-tickets-mcp__tdx_list_statuses",
+      "mcp__tdx-tickets-mcp__tdx_get_feed_entry"
     ],
     "deny": [],
     "ask": []

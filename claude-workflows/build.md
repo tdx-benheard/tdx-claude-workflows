@@ -33,17 +33,23 @@ cd .. && powershell -Command "& 'C:\Program Files\Microsoft Visual Studio\2022\P
 
 **⚠️ SCSS files:** Do NOT use MSBuild for SCSS changes. User will handle SCSS compilation manually.
 
-**🚨 ALWAYS ASK USER FIRST:** Before building, ask the user which approach they prefer:
-1. Build only the specific changed project(s)
-2. Build the full solution
-3. No build needed (if only inline CSS/JS/markup changed)
+**🚨 BUILD DECISION RULES:**
 
-**Exception:** If user explicitly says "build the solution", proceed directly with full solution build without asking.
+**Build FULL solution (no questions asked) when:**
+- User asks to switch branches and build
+- User pulls/merges changes and asks to build
+- No specific context about which app is being worked on
+- User explicitly says "build the solution"
+
+**Build SPECIFIC project only when:**
+- You just made targeted changes to specific files in a single project
+- User explicitly specifies which project to build
+- Clear context that work is isolated to one application
 
 **Examples:**
 - Changed `TDClient` controller → Build only `TDClient\TDClient.csproj`
 - Changed `TDNext` page → Build only `TDNext\TDNext.csproj`
-- Changed shared `TeamDynamix.Domain` code → **Ask user** if they want full solution or just the changed project + specific app
+- Changed shared `TeamDynamix.Domain` code → Build full solution (affects multiple apps)
 
 **When full solution might be needed:**
 - Changes to shared libraries (`objects/TeamDynamix.*`)
