@@ -24,10 +24,11 @@ cd /c/source/TDDev/enterprise/.claude && git status
 ```
 
 ### 3. Commit & Push (if changes exist)
-Ask user for commit message, then for each location with changes:
+Generate a descriptive commit message based on the changes, then for each location with changes:
 ```bash
 git add . && git commit -m "<message>" && git push origin master
 ```
+**DO NOT ask user for commit message - always generate an appropriate message automatically.**
 
 ### 4. Final Pull (Both Locations)
 ```bash

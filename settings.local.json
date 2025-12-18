@@ -17,12 +17,18 @@
       "Bash(git pull:*)",
       "Bash(npm run builddev:TDWorkManagement:*)",
       "Bash(git worktree add:*)",
-      "mcp__tdx-tickets-mcp__tdx_search_tickets"
+      "mcp__tdx-tickets-mcp__tdx_search_tickets",
+      "Bash(cat:*)",
+      "Bash(grep:*)",
+      "Bash(git stash:*)"
     ],
     "deny": [],
     "ask": []
   },
   "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "tdx-tickets-mcp"
+  ],
   "hooks": {
     "PostToolUse": [
       {

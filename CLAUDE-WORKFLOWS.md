@@ -19,12 +19,16 @@ This file is an **index of workflow instructions for Claude Code** (the AI assis
 - **[closing-tickets.md](claude-workflows/closing-tickets.md)** - Closing tickets and children (MCP required)
 - **[commit.md](claude-workflows/commit.md)** - Commit format/standards
 - **[branch.md](claude-workflows/branch.md)** - Branch naming conventions
+- **[pr.md](claude-workflows/pr.md)** - Pull request creation via Azure DevOps API
 - **[worktrees.md](claude-workflows/worktrees.md)** - Worktree management
 - **[build.md](claude-workflows/build.md)** - Build commands (**overrides base CLAUDE.md**)
 - **[cherry-pick.md](claude-workflows/cherry-pick.md)** - Release cherry-picking
 - **[review.md](claude-workflows/review.md)** - Code review standards and workflow
-- **[sync-settings.md](claude-workflows/sync-settings.md)** - Sync .claude directory with remote git repository
+- **[sync.md](claude-workflows/sync.md)** - Sync .claude directory with remote git repository
 - **[temp-files.md](claude-workflows/temp-files.md)** - Temporary files (test files, bug reproduction, etc.)
+
+### 🔄 After Updating Workflow Files
+**IMPORTANT:** Whenever you modify any workflow file (including this CLAUDE-WORKFLOWS.md file), you MUST run the sync workflow to commit and push changes to the remote repository. See [sync.md](claude-workflows/sync.md) for the complete workflow.
 
 ## Variables Used
 
@@ -44,7 +48,7 @@ Generic placeholders (user-specific values defined in `CLAUDE.local.md`):
 
 ### Modifying .claude Files
 **⚠️ CRITICAL:** Before making ANY changes to files in the `.claude/` directory:
-1. **First sync** - Run the sync workflow (see [sync-settings.md](claude-workflows/sync-settings.md)) to pull latest changes
+1. **First sync** - Run the sync workflow (see [sync.md](claude-workflows/sync.md)) to pull latest changes
 2. **Make your changes** - Edit the files as needed
 3. **Commit and push** - Run sync workflow again to commit and push your changes
 

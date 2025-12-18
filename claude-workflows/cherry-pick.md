@@ -68,7 +68,13 @@ git cherry-pick --continue
 git cherry-pick --skip  # Document in PR
 ```
 
-## PR Description Template
+## Step 4: Create Pull Request
+
+**After successful push, ask user:** "Would you like me to create the pull request?"
+
+If yes, follow **[pr.md](pr.md)** workflow with cherry-pick PR description:
+
+### PR Description Template
 ```
 [Type] #[ID] - [Title]
 
@@ -83,4 +89,5 @@ Merge conflicts:
 Skipped commits:
 [hash] - [message] - Reason: [why]
 ```
-**Output as copyable text. Ask if user wants saved to `.claude/temp/CP_PR_Message-{BRANCH_NAME}.txt`**
+
+**Fallback:** If PR creation fails, output as copyable text. Ask if user wants saved to `.claude/temp/CP_PR_Message-{BRANCH_NAME}.txt`

@@ -8,7 +8,7 @@
 3. **🚨 MUST GET USER APPROVAL 🚨** - Show message, ask "Would you like me to proceed with this commit?", wait for confirmation
 4. **Execute:** Only after approval, run git commit
 5. **Push:** After successful commit, ask user "Would you like me to push this branch to remote?"
-   - If yes: Run `git push -u origin <branch-name>`
+   - If yes: Run `git push -u origin <branch-name>`, then ask "Would you like me to create a pull request?" (see **[pr.md](pr.md)**)
    - If no: Skip and continue
 
 ## Code Review
