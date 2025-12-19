@@ -21,6 +21,7 @@
       "Bash(cat:*)",
       "Bash(git log:*)",
       "Bash(grep:*)",
+      "Bash(git push:*)",
       "mcp__tdx-tickets-mcp__tdx_update_ticket",
       "mcp__tdx-tickets-mcp__tdx_list_statuses",
       "mcp__tdx-tickets-mcp__tdx_get_feed_entry"
