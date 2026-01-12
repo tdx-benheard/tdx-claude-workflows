@@ -1,167 +1,119 @@
-# Web Agent Testing Workflow
+# Web Agent Testing
 
-This document describes how to use the web-agent-mcp tool to test TeamDynamix applications in local development environments.
+Use web-agent-mcp to test TeamDynamix applications in the browser.
 
-## Prerequisites
+## Environment URLs
 
-- web-agent-mcp MCP server installed and configured (see `C:\Users\ben.heard\.claude\MCP-SETUP.md`)
-- Playwright browsers installed (`npx playwright install` in `C:\source\MCP\web-agent-mcp`)
-- Development credentials stored in `C:\Users\ben.heard\.config\tdx-mcp\dev-credentials.json`
+### TDDM
+- TDNext: `http://localhost/TDDM/TDNext/`
+- TDClient: `http://localhost/TDDM/TDClient/`
+- TDAdmin: `http://localhost/TDDM/TDAdmin/`
+- TDWorkManagement: `http://localhost/TDDM/TDWorkManagement/`
 
-## Development Environment URLs
-
-### TDDM Environment
-- **Repository**: `C:\source\TDDM\enterprise`
-- **Base URL**: `http://localhost/TDDM/`
-- **Applications**:
-  - TDNext: `http://localhost/TDDM/TDNext/`
-  - TDClient: `http://localhost/TDDM/TDClient/`
-  - TDAdmin: `http://localhost/TDDM/TDAdmin/`
-  - TDWorkManagement: `http://localhost/TDDM/TDWorkManagement/`
-
-### TDDev Environment
-- **Repository**: `C:\source\TDDev\enterprise`
-- **Base URL**: `http://localhost/TDDev/`
-- **Applications**: Same structure as TDDM
+### TDDev
+- TDNext: `http://localhost/TDDev/TDNext/`
+- TDClient: `http://localhost/TDDev/TDClient/`
+- TDAdmin: `http://localhost/TDDev/TDAdmin/`
+- TDWorkManagement: `http://localhost/TDDev/TDWorkManagement/`
 
 ## Authentication
 
-### Credentials Location
-
-Development credentials are stored in:
-```
-C:\Users\ben.heard\.config\tdx-mcp\dev-credentials.json
-```
-
-Contains:
-- `TDX_USERNAME`: Username for local development
+**Credentials:** Stored in `C:\Users\ben.heard\.config\tdx-mcp\dev-credentials.json`
+- `TDX_USERNAME`: Username
 - `TDX_PASSWORD`: DPAPI-encrypted password (format: `dpapi:BASE64STRING`)
 
-### Login Form Selectors
+**Login selectors:**
+- Username: `#txtUserName`
+- Password: `#txtPassword`
+- Submit: `#btnSignIn`
 
-- **Username field**: `#txtUserName`
-- **Password field**: `#txtPassword`
-- **Submit button**: `#btnSignIn`
-
-### Web Agent Login Tool
-
+**Login tool:**
 ```javascript
-await mcp__web-agent-mcp__login({
+mcp__web-agent-mcp__login({
   usernameSelector: '#txtUserName',
   passwordSelector: '#txtPassword',
   username: 'bheard',
-  password: 'dpapi:AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAA...',  // From dev-credentials.json
+  password: 'dpapi:...', // From dev-credentials.json
   submitSelector: '#btnSignIn'
-});
+})
 ```
 
-**Security Note**: The `dpapi:` prefix indicates Windows DPAPI encryption. The password is automatically decrypted by the web-agent-mcp tool and never exposed in logs.
+**Note:** Login may timeout but usually succeeds. Take a screenshot to verify.
 
-### Login Workflow
+## Basic Operations
 
-1. **Navigate to any protected page** - The app will redirect to login if not authenticated
-2. **Use the login tool** - Provides credentials and form selectors
-3. **Wait for redirect** - After successful login, the app redirects to the requested page
-4. **Check authentication** - Use `window.location.href` to verify you're on the correct page
-
-### Known Issue: Login Timeout
-
-The login tool may timeout waiting for navigation to complete, but the login usually succeeds anyway. If timeout occurs:
-1. Take a screenshot to verify the page loaded
-2. Check `window.location.href` to confirm authentication succeeded
-3. Navigate to the desired URL if needed
-
-## Basic Web Agent Operations
-
-### Navigate to URL
-
+**Navigate:**
 ```javascript
-await mcp__web-agent-mcp__navigate({
+mcp__web-agent-mcp__navigate({
   url: 'http://localhost/TDDM/TDNext/',
-  waitUntil: 'networkidle'  // or 'load', 'domcontentloaded'
-});
+  waitUntil: 'networkidle'
+})
 ```
 
-### Take Screenshot
-
+**Screenshot:**
 ```javascript
-// Default: 800px JPEG (preferred for context)
-await mcp__web-agent-mcp__screenshot({
-  filename: 'page-name.jpg'
-});
-
-// High resolution (only when needed)
-await mcp__web-agent-mcp__screenshot({
-  filename: 'design.jpg',
-  hiRes: true
-});
+mcp__web-agent-mcp__screenshot({ filename: 'page.jpg' })
 ```
 
-### Query Page Elements
-
+**Type:**
 ```javascript
-await mcp__web-agent-mcp__query_page({
-  queries: [
-    { name: 'element1', selector: '#elementId' },
-    { name: 'element2', selector: '.className', extract: 'text' },
-    { name: 'allButtons', selector: 'button', all: true }
-  ]
-});
+mcp__web-agent-mcp__type({ selector: '#inputId', text: 'value' })
 ```
 
-### Type Into Input
-
+**Click:**
 ```javascript
-await mcp__web-agent-mcp__type({
-  selector: '#inputField',
-  text: 'some text'
-});
+mcp__web-agent-mcp__click({ selector: '#buttonId' })
 ```
 
-### Click Element
-
+**Execute console:**
 ```javascript
-await mcp__web-agent-mcp__click({
-  selector: '#buttonId'
-});
-```
-
-### Execute Console Code
-
-```javascript
-await mcp__web-agent-mcp__execute_console({
+mcp__web-agent-mcp__execute_console({
   code: 'window.location.href'
-});
+})
+```
+
+**Query elements:**
+```javascript
+mcp__web-agent-mcp__query_page({
+  queries: [
+    { name: 'title', selector: 'h1', extract: 'text' },
+    { name: 'buttons', selector: 'button', all: true }
+  ]
+})
+```
+
+## Common Testing Patterns
+
+**Check computed styles:**
+```javascript
+mcp__web-agent-mcp__execute_console({
+  code: `
+    const el = document.querySelector('.selector');
+    const styles = window.getComputedStyle(el);
+    JSON.stringify({
+      color: styles.color,
+      fontSize: styles.fontSize
+    }, null, 2);
+  `
+})
+```
+
+**Highlight element:**
+```javascript
+mcp__web-agent-mcp__execute_console({
+  code: `
+    document.querySelector('.selector').style.outline = '3px solid red';
+  `
+})
 ```
 
 ## Troubleshooting
 
-### Playwright Browsers Not Installed
+**Element not found:** Wait after navigation/clicks
+```javascript
+mcp__web-agent-mcp__wait({ timeout: 3000 })
+```
 
-**Symptom**: Error message about missing browser executables
+**Wrong environment after login:** Check `appsettings.Development.json` has correct `/TDDM/` or `/TDDev/` paths
 
-**Fix**: Run `npx playwright install` in `C:\source\MCP\web-agent-mcp`
-
-### Login Redirects to Wrong Environment
-
-**Symptom**: After login, redirected to `/TDDev/` instead of `/TDDM/` (or vice versa)
-
-**Cause**: Application `appsettings.Development.json` or `web.config` has incorrect virtual directory paths
-
-**Fix**: See `CLAUDE.local.md` section on "Web Config Virtual Directory Path"
-
-### Changes Don't Appear After Build
-
-**Symptom**: Code changes don't reflect in the browser
-
-**Fix**:
-1. Recycle app pool: Touch `web.config` or restart IIS
-2. Close browser tabs completely and reopen (tabs cache URLs)
-3. Hard refresh: Ctrl+Shift+R
-
-## Reference Documentation
-
-- **Web agent documentation**: `C:\source\MCP\web-agent-mcp\CLAUDE.md`
-- **Dev credentials**: `C:\Users\ben.heard\.config\tdx-mcp\dev-credentials.json`
-- **MCP setup guide**: `C:\Users\ben.heard\.claude\MCP-SETUP.md`
-- **Project instructions**: `CLAUDE.md` and `CLAUDE.local.md` in project root
+**Changes don't appear:** Recycle app pool (touch web.config) and close/reopen browser tabs
