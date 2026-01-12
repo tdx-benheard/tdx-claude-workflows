@@ -13,8 +13,8 @@ Pull requests can be created using the Azure DevOps REST API with stored credent
   "organization": "tdx-eng",
   "organizationUrl": "https://dev.azure.com/tdx-eng",
   "pat": "YOUR_PAT_HERE",
-  "defaultProject": "TDDM",
-  "defaultRepo": "enterprise"
+  "defaultProject": "enterprise",
+  "defaultRepo": "monorepo"
 }
 ```
 
@@ -57,21 +57,43 @@ Pull requests can be created using the Azure DevOps REST API with stored credent
 
 4. **Get user approval** - Show PR title and description, ask to proceed
 
-5. **Create PR via Azure DevOps API:**
+5. **Create PR via Azure DevOps API (PowerShell - RECOMMENDED):**
+
+   **Note:** PowerShell with `Invoke-RestMethod` is the most reliable method on Windows. Avoid bash/curl due to quoting/escaping issues.
+
+   Create a temporary PowerShell script:
+   ```powershell
+   $prBody = @"
+   {
+     "sourceRefName": "refs/heads/BRANCH_NAME",
+     "targetRefName": "refs/heads/develop",
+     "title": "PR_TITLE",
+     "description": "PR_DESCRIPTION"
+   }
+   "@
+
+   $config = Get-Content C:\Users\{USERNAME}\.claude\azure-devops.json | ConvertFrom-Json
+
+   $response = Invoke-RestMethod -Uri "https://dev.azure.com/tdx-eng/enterprise/_apis/git/repositories/monorepo/pullrequests?api-version=7.1" `
+     -Method Post `
+     -Headers @{
+       "Authorization" = "Basic " + [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(":$($config.pat)"))
+       "Content-Type" = "application/json"
+     } `
+     -Body $prBody
+
+   $response | ConvertTo-Json
+   ```
+
+   Then execute:
    ```bash
-   curl -X POST \
-     -H "Content-Type: application/json" \
-     -H "Authorization: Basic $(echo -n :PAT | base64)" \
-     "https://dev.azure.com/tdx-eng/TDDM/_apis/git/repositories/enterprise/pullrequests?api-version=7.1" \
-     -d '{
-       "sourceRefName": "refs/heads/BRANCH_NAME",
-       "targetRefName": "refs/heads/develop",
-       "title": "PR_TITLE",
-       "description": "PR_DESCRIPTION"
-     }'
+   powershell -File create-pr.ps1
+   rm create-pr.ps1
    ```
 
 6. **Output PR URL** for user to view
+
+   Format: `https://dev.azure.com/tdx-eng/enterprise/_git/monorepo/pullrequest/{prId}`
 
 ### Cherry-Pick Release PR
 
@@ -81,31 +103,53 @@ Same workflow as above, but:
 
 ## API Reference
 
-**Base URL:** `https://dev.azure.com/tdx-eng/TDDM/_apis`
+**Base URL:** `https://dev.azure.com/tdx-eng/enterprise/_apis`
+
+**Repository Info:**
+- Project: `enterprise`
+- Repository: `monorepo`
 
 **Common Operations:**
-- Create PR: `POST /git/repositories/{repo}/pullrequests?api-version=7.1`
-- Add comment: `POST /git/repositories/{repo}/pullrequests/{prId}/threads?api-version=7.1`
-- Link work item: `PATCH /git/repositories/{repo}/pullrequests/{prId}?api-version=7.1`
+- Create PR: `POST /git/repositories/monorepo/pullrequests?api-version=7.1`
+- Add comment: `POST /git/repositories/monorepo/pullrequests/{prId}/threads?api-version=7.1`
+- Link work item: `PATCH /git/repositories/monorepo/pullrequests/{prId}?api-version=7.1`
 - Set reviewers: Include `reviewers` array in create request
 
 **Auth:** Basic authentication with PAT as password (empty username)
 
-## Example: Create PR
+## Complete Working Example
 
+```powershell
+# create-pr.ps1
+$branch = git branch --show-current
+
+$prBody = @"
+{
+  "sourceRefName": "refs/heads/$branch",
+  "targetRefName": "refs/heads/develop",
+  "title": "Problem #12345 - Your PR title here",
+  "description": "Problem #12345 - Your PR title\n\n## Summary\n- Change 1\n- Change 2\n\n## Test Plan\n- [ ] Test 1\n- [ ] Test 2"
+}
+"@
+
+$config = Get-Content C:\Users\ben.heard\.claude\azure-devops.json | ConvertFrom-Json
+
+$response = Invoke-RestMethod -Uri "https://dev.azure.com/tdx-eng/enterprise/_apis/git/repositories/monorepo/pullrequests?api-version=7.1" `
+  -Method Post `
+  -Headers @{
+    "Authorization" = "Basic " + [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(":$($config.pat)"))
+    "Content-Type" = "application/json"
+  } `
+  -Body $prBody
+
+Write-Host "PR Created: https://dev.azure.com/tdx-eng/enterprise/_git/monorepo/pullrequest/$($response.pullRequestId)"
+$response | ConvertTo-Json
+```
+
+Execute with:
 ```bash
-# Read config
-PAT=$(powershell -Command "& {(Get-Content C:\Users\{USERNAME}\.claude\azure-devops.json | ConvertFrom-Json).pat}")
-
-# Get current branch
-BRANCH=$(git branch --show-current)
-
-# Create PR
-curl -X POST \
-  -u ":$PAT" \
-  -H "Content-Type: application/json" \
-  "https://dev.azure.com/tdx-eng/TDDM/_apis/git/repositories/enterprise/pullrequests?api-version=7.1" \
-  -d @pr-body.json
+powershell -File create-pr.ps1
+rm create-pr.ps1
 ```
 
 ## Troubleshooting
@@ -119,5 +163,9 @@ curl -X POST \
 - Ensure branch is pushed: `git push`
 - Check target branch exists
 
+**Bash/curl quoting errors:**
+- **Do not use bash with curl** for PR creation on Windows - escaping is unreliable
+- Use the PowerShell approach above instead
+
 **PR URL format:**
-`https://dev.azure.com/tdx-eng/TDDM/_git/enterprise/pullrequest/{prId}`
+`https://dev.azure.com/tdx-eng/enterprise/_git/monorepo/pullrequest/{prId}`

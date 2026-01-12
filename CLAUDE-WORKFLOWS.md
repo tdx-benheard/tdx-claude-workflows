@@ -26,6 +26,7 @@ This file is an **index of workflow instructions for Claude Code** (the AI assis
 - **[review.md](claude-workflows/review.md)** - Code review standards and workflow
 - **[sync.md](claude-workflows/sync.md)** - Sync .claude directory with remote git repository
 - **[temp-files.md](claude-workflows/temp-files.md)** - Temporary files (test files, bug reproduction, etc.)
+- **[webagent.md](claude-workflows/webagent.md)** - Browser automation testing with web-agent-mcp
 
 ### 🔄 After Updating Workflow Files
 **IMPORTANT:** Whenever you modify any workflow file (including this CLAUDE-WORKFLOWS.md file), you MUST run the sync workflow to commit and push changes to the remote repository. See [sync.md](claude-workflows/sync.md) for the complete workflow.
