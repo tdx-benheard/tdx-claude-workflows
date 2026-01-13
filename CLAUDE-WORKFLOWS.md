@@ -22,7 +22,6 @@
 | "cherry-pick", "port to release" | [cherry-pick.md](claude-workflows/cherry-pick.md) | Release workflow |
 | "create worktree", "worktree add" | [worktrees.md](claude-workflows/worktrees.md) | Naming and structure |
 | "close ticket", "mark complete" | [closing-tickets.md](claude-workflows/closing-tickets.md) | Parent/child handling |
-| "sync settings", "sync .claude" | [sync.md](claude-workflows/sync.md) | TDDM ↔ TDDev sync |
 | "create temp file", "test script" | [temp-files.md](claude-workflows/temp-files.md) | Location and gitignore |
 | "create track", "update track", "track" | [track.md](claude-workflows/track.md) | Progress tracking docs (800 line max) |
 
@@ -50,13 +49,12 @@ Placeholders in workflow files (values from `CLAUDE.local.md`):
 
 ## Rules
 
-**Modifying .claude files:**
-1. Run sync workflow to pull latest
-2. Make changes
-3. Run sync workflow to commit and push
+**Modifying workflow files:**
+- Workflows are at user scope (`C:\Users\ben.heard\.claude\claude-workflow\`)
+- Changes apply to all projects immediately
+- Commit and push changes as needed using git
 
-**Git repository:**
-- `.claude/` has its own separate git repo (gitignored from main repo)
-- If staged accidentally: `git reset .claude/`
-
-**After updating workflows:** Run sync workflow to push changes (see [sync.md](claude-workflows/sync.md))
+**Project-specific config:**
+- Keep in each project's `.claude\CLAUDE.local.md`
+- Examples: username, UIDs, report IDs, paths
+- Not tracked in workflows git repo
