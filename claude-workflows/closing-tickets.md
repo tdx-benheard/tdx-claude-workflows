@@ -1,40 +1,46 @@
 # Closing Tickets Workflow
 
-## Quick Summary
-Close TDX tickets and their children after work is complete. Mark tasks complete, update status, add feed entries.
+Close TDX tickets and children after work is complete.
 
 ## Prerequisites
+
 - **MCP Server**: `tdx-tickets-mcp`
-- **Status IDs**: 568=Ready for Test, 5=Closed (see ticket-workflow.md for full list)
-- **Key Functions**: `tdx_get_ticket`, `tdx_update_ticket`, `tdx_add_ticket_feed`, `tdx_search_tickets`, `tdx_list_ticket_tasks`, `tdx_update_ticket_task`
+- **Status IDs**: 568=Ready for Test, 5=Closed
+- **Functions**: `tdx_get_ticket`, `tdx_update_ticket`, `tdx_add_ticket_feed`, `tdx_search_tickets`, `tdx_list_ticket_tasks`, `tdx_update_ticket_task`
+
+---
 
 ## Finding Tickets Ready to Close
 
-**When user asks "what tickets are ready to close" or "close tickets that are ready":**
-1. Search tickets: `tdx_search_tickets` with `responsibilityUids: ["{USER_UID}"]` and `statusIDs: [568]` (Ready for Test)
-2. For each ticket, check tasks via `tdx_list_ticket_tasks`
-3. Ticket is ready if it has task "Update External Fields and Notify User (if applicable)"
-4. Present list of ready tickets to user
+**When user asks "what tickets are ready to close":**
+1. Search: `tdx_search_tickets` with `responsibilityUids: ["{USER_UID}"]`, `statusIDs: [568]`
+2. Check tasks via `tdx_list_ticket_tasks`
+3. Ready if has task "Update External Fields and Notify User (if applicable)"
+4. Present list to user
 
-## Steps to Close Tickets
+---
 
-### 1. Identify Tickets and Children
-- Get ticket details via `tdx_get_ticket`
-- Search for children via `tdx_search_tickets` with `parentTicketID` parameter
+## Steps to Close
 
-### 2. Complete Remaining Tasks (if applicable)
-- For incomplete tasks (PercentComplete < 100): use `tdx_update_ticket_task` with comments "Task completed - marking as 100% complete."
+**1. Identify tickets and children**
+- Get ticket: `tdx_get_ticket`
+- Search children: `tdx_search_tickets` with `parentTicketID`
 
-### 3. Close All Tickets
-- Update parent and child tickets: `tdx_update_ticket` with `statusId: 5`
-- **IMPORTANT**: `comments` parameter does NOT create visible feed entries
+**2. Complete remaining tasks** (if applicable)
+- For incomplete tasks (PercentComplete < 100): `tdx_update_ticket_task` with comment "Task completed - marking as 100% complete."
 
-### 4. Add Feed Entries
-- Add feed entry separately via `tdx_add_ticket_feed` to ALL tickets (parents and children)
-- Example message: "Fix to go out in next release"
+**3. Close all tickets**
+- Update parent and children: `tdx_update_ticket` with `statusId: 5`
+- **IMPORTANT**: `comments` parameter does NOT create feed entries
+
+**4. Add feed entries**
+- Use `tdx_add_ticket_feed` on ALL tickets (parents and children)
+- Example: "Fix to go out in next release"
+
+---
 
 ## Key Points
-- **Status ID 568 = Ready for Test, 5 = Closed**
-- **Feed entries are separate** - must use `tdx_add_ticket_feed`
-- **Always close children** - search first to avoid orphans
-- **Use TodoWrite** to track multi-step operations
+
+- Feed entries are separate - must use `tdx_add_ticket_feed`
+- Always close children - search first to avoid orphans
+- Use TodoWrite to track multi-step operations

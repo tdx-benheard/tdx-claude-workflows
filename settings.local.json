@@ -65,7 +65,11 @@
       "Bash(curl:*)",
       "Bash(find:*)",
       "Bash(powershell -Command:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(Get-ChildItem \"C:\\\\Source\\\\Logs\\\\WM\" -Filter \"stdout_*.log\")",
+      "Bash(Get-Content -Tail 100)",
+      "Bash(\"C:\\\\Program Files\\\\Microsoft Visual Studio\\\\2022\\\\Professional\\\\MSBuild\\\\Current\\\\Bin\\\\MSBuild.exe\" TDWorkManagement/TDWorkManagement.csproj -t:Rebuild -p:Configuration=Debug -v:minimal)",
+      "Bash(\"C:\\\\Program Files\\\\Microsoft Visual Studio\\\\2022\\\\Professional\\\\MSBuild\\\\Current\\\\Bin\\\\MSBuild.exe\" TDWorkManagement/TDWorkManagement.csproj -t:Build -p:Configuration=Debug -v:minimal)"
     ],
     "deny": [],
     "ask": []

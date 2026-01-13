@@ -1,48 +1,47 @@
 # Code Review Workflow
 
-## Trigger Commands
-- "review the code"
-- "review my changes"
-- "do a code review"
-- "review all pending changes"
+**Triggers:** "review", "review code", "review my changes"
 
 ## Review Standards
-Always review for:
+
+Check for:
 - **Errors** - Bugs, logic errors, runtime issues
-- **Risks** - Security vulnerabilities, data loss potential, breaking changes
+- **Risks** - Security vulnerabilities, data loss, breaking changes
 - **Redundancies** - Duplicate code, unnecessary repetition
-- **Inefficiencies** - Performance issues, suboptimal algorithms, resource waste
-- **Readability** - Code clarity, maintainability, documentation quality
+- **Inefficiencies** - Performance issues, suboptimal algorithms
+- **Readability** - Code clarity, maintainability
+
+---
 
 ## Workflow
 
-1. **Get modified files:**
-   ```bash
-   git status
-   git diff <files>
-   ```
+**1. Get modified files**
+```bash
+git status
+git diff <files>
+```
 
-2. **Review each file** for the four categories above
+**2. Review for standards above**
 
-3. **Check for common issues:**
-   - XSS vulnerabilities (innerHTML vs textContent)
-   - SQL injection (parameterization)
-   - Breaking changes (API models, shared libraries, database schema)
-   - N+1 query problems
-   - Missing async/await on I/O operations
-   - Memory leaks (event listeners)
+**3. Check common issues**
+- XSS vulnerabilities (innerHTML vs textContent)
+- SQL injection (parameterization)
+- Breaking changes (API models, shared libraries, DB schema)
+- N+1 query problems
+- Missing async/await on I/O operations
+- Memory leaks (event listeners)
 
-4. **Present results:**
-   ```
-   ## Code Review Results
+**4. Present results**
+```
+## Code Review Results
 
-   ### ✅ Errors: [None found OR list with file:line]
-   ### 🔒 Risks: [None found OR list with file:line]
-   ### ♻️ Redundancies: [None found OR list]
-   ### ⚡ Inefficiencies: [None found OR list]
-   ### 📖 Readability: [Score/10 with suggestions for improvement]
+### ✅ Errors: [None OR list with file:line]
+### 🔒 Risks: [None OR list with file:line]
+### ♻️ Redundancies: [None OR list]
+### ⚡ Inefficiencies: [None OR list]
+### 📖 Readability: [Score/10 with suggestions]
 
-   ### Overall: [✅ Ready | ⚠️ Needs attention | ❌ Must fix]
-   ```
+### Overall: [✅ Ready | ⚠️ Needs attention | ❌ Must fix]
+```
 
-5. **Ask user** if they want to address issues before committing
+**5. Ask if user wants to address issues before committing**
