@@ -4,5 +4,8 @@ temp/
 tickets/
 tracks/
 
+# User-specific settings (too volatile to track)
+settings.local.json
+
 # Windows reserved device names that may be created accidentally
 nul
