@@ -44,7 +44,15 @@
       "mcp__tdx-projects-mcp__*",
       "mcp__web-agent-mcp__*",
       "WebSearch",
-      "WebFetch(*)"
+      "WebFetch(*)",
+      "Bash(taskkill /F /PID 32792)",
+      "Bash(copy:*)",
+      "Bash(cmd /c \"copy TDWorkManagement\\\\obj\\\\Debug\\\\net8.0\\\\TDWorkManagement.dll TDWorkManagement\\\\bin\\\\Debug\\\\net8.0\\\\TDWorkManagement.dll\")",
+      "Bash(cmd /c 'dir /b /o-d \"\"c:\\\\Source\\\\Logs\\\\WM\\\\stdout*\"\" | powershell -Command \"\"$input | Select-Object -First 1\"\"')",
+      "Bash(cmd /c 'dir \"\"c:\\\\Source\\\\Logs\\\\WM\\\\stdout*.log\"\" /b /o-d')",
+      "Bash(cmd /c 'if exist \"\"c:\\\\Source\\\\Logs\\\\WM\\\\\"\" \\(dir \"\"c:\\\\Source\\\\Logs\\\\WM\\\\\"\" /b /o-d\\) else \\(echo Directory not found\\)')",
+      "Bash(cmd /c 'if exist \"\"c:\\\\Source\\\\Logs\\\\WM\\\\\"\" \\(dir \"\"c:\\\\Source\\\\Logs\\\\WM\\\\stdout*.log\"\" /b /o-d | powershell -Command \"\"$input | Select-Object -First 1 | ForEach-Object { Write-Output \\\\\"\"c:\\\\Source\\\\Logs\\\\WM\\\\$_\\\\\"\" }\"\"\\)')",
+      "Bash(cmd /c \"copy TDWorkManagement\\\\obj\\\\Debug\\\\net8.0\\\\TDWorkManagement.dll TDWorkManagement\\\\bin\\\\Debug\\\\net8.0\\\\TDWorkManagement.dll /Y\")"
     ],
     "deny": [],
     "ask": []

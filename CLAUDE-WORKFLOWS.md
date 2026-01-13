@@ -2,7 +2,7 @@
 
 ## What is this?
 
-This file is an **index of workflow instructions for Claude Code** (the AI assistant). It is NOT intended for human developers to read directly.
+This file is the **workflow index and trigger router** for Claude Code. Before taking any action, Claude checks this file to see if a workflow applies.
 
 **Usage:**
 - Copy this file and the `claude-workflows/` directory to your `.claude/` folder
@@ -10,6 +10,60 @@ This file is an **index of workflow instructions for Claude Code** (the AI assis
 - Claude Code will follow these workflows when you work with tickets, commits, branches, etc.
 
 **User-specific configuration:** See `CLAUDE.local.md` for your username, report IDs, release version, etc.
+
+---
+
+## ⚡ Quick Trigger Reference
+
+**Pattern:** When you see these phrases from the user, read the corresponding workflow file FIRST.
+
+### 🔥 Build (HIGHEST PRIORITY)
+**Triggers:** build, compile, rebuild, msbuild, MSBuild, dotnet build, npm run build, grunt, build.bat, build.ps1, "fix build errors"
+**File:** [build.md](claude-workflows/build.md) - **MANDATORY READ FIRST**
+
+### Commit & Push
+**Triggers:** commit, git commit, "commit this", "commit changes"
+**File:** [commit.md](claude-workflows/commit.md) - Includes review offer, approval, auto-chain to push/PR
+
+### Pull Requests
+**Triggers:** "create pr", "make pr", "pull request", pr, "open pr"
+**File:** [pr.md](claude-workflows/pr.md) - Pre-requisites check, Azure DevOps API
+
+### Code Review
+**Triggers:** review, "review code", "code review", "review changes"
+**File:** [review.md](claude-workflows/review.md) - Security, performance, quality checks
+
+### Tickets
+**Triggers:** "get ticket", "get me a ticket", "work on ticket", "claim ticket", "clauded ticket"
+**File:** [ticket-workflow.md](claude-workflows/ticket-workflow.md) - Full workflow: claim → branch → fix → build → commit → PR
+
+### Web Testing
+**Triggers:** "test in browser", "use web agent", "test ui", "check styles", screenshot, "login to app"
+**File:** [webagent.md](claude-workflows/webagent.md) - Auth, URLs, testing patterns
+
+### Branch Operations
+**Triggers:** "create branch", "new branch", "checkout branch", "switch branch"
+**File:** [branch.md](claude-workflows/branch.md) - Naming conventions
+
+### Cherry-Pick
+**Triggers:** "cherry-pick", "cherry pick", "release cherry-pick", "port to release"
+**File:** [cherry-pick.md](claude-workflows/cherry-pick.md) - Release workflow
+
+### Worktrees
+**Triggers:** "create worktree", "worktree add", "new worktree"
+**File:** [worktrees.md](claude-workflows/worktrees.md) - Naming and structure
+
+### Close Tickets
+**Triggers:** "close ticket", "mark complete", "resolve ticket"
+**File:** [closing-tickets.md](claude-workflows/closing-tickets.md) - Parent/child handling
+
+### Sync Settings
+**Triggers:** "sync settings", "sync .claude", "update settings"
+**File:** [sync.md](claude-workflows/sync.md) - TDDM ↔ TDDev sync
+
+### Temp Files
+**Triggers:** "create test file", "create temp file", "test script"
+**File:** [temp-files.md](claude-workflows/temp-files.md) - Location and gitignore
 
 ---
 

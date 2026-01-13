@@ -1,5 +1,7 @@
 # Build Instructions
 
+**Triggers:** build, compile, rebuild, msbuild, MSBuild, dotnet build, npm run build, grunt, build.bat, build.ps1, "fix build errors"
+
 **IMPORTANT:** Overrides base CLAUDE.md. Authoritative build documentation.
 
 ## MSBuild Path
@@ -149,3 +151,18 @@ Always use `run_in_background: true` and `timeout: 30000` when calling via Bash 
 - .NET 8.0 SDK
 - Node.js LTS
 - Azure Artifacts Credential Provider (see NU1900 above)
+
+## Post-Build Next Steps
+
+After EVERY successful build:
+
+### 1. Prewarm (MANDATORY for C# builds)
+Already documented above - must be completed before any other action.
+
+### 2. Offer to Commit
+If working on a feature branch (not main/develop):
+- Ask: "Build and prewarm succeeded. Would you like to commit these changes?"
+- If **YES** → Read `commit.md` (same directory) and start commit workflow
+- If **NO** → Stop here
+
+**Rationale:** Users often forget to commit after successful builds. This automatic offer keeps the workflow moving forward.

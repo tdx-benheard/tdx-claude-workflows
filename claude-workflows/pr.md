@@ -1,5 +1,36 @@
 # Pull Request Creation
 
+**Triggers:** "create pr", "make pr", "pull request", pr, "open pr"
+
+---
+
+## Pre-Requisites Verification
+
+Before starting PR workflow, verify these conditions are met:
+
+### 1. Branch Pushed to Remote
+- Check: `git status` shows "Your branch is up to date with 'origin/<branch>'"
+- If NOT pushed:
+  - Ask: "Branch is not pushed. Should I push it now?"
+  - If YES → Execute `git push origin <branch>`, then continue
+  - If NO → Stop PR workflow
+
+### 2. Commit Workflow Completed
+- If uncertain whether commits are complete:
+  - Ask: "Have you committed all your changes?"
+  - If NO → Offer: "Should I run the commit workflow?" → Read commit.md
+  - If YES → Continue
+
+### 3. Build Succeeded (for code changes)
+- If working with code changes (not just docs):
+  - Ask: "Did the build succeed and prewarm complete?"
+  - If NO or UNCERTAIN → Recommend: "Run build workflow first (read build.md)"
+  - If YES → Continue
+
+**If any pre-requisite fails, offer to complete it before proceeding with PR creation.**
+
+---
+
 ## Azure DevOps REST API
 
 Pull requests can be created using the Azure DevOps REST API with stored credentials.
