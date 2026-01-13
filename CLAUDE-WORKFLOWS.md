@@ -24,6 +24,7 @@
 | "close ticket", "mark complete" | [closing-tickets.md](claude-workflows/closing-tickets.md) | Parent/child handling |
 | "sync settings", "sync .claude" | [sync.md](claude-workflows/sync.md) | TDDM ↔ TDDev sync |
 | "create temp file", "test script" | [temp-files.md](claude-workflows/temp-files.md) | Location and gitignore |
+| "create track", "update track", "track" | [track.md](claude-workflows/track.md) | Progress tracking docs (800 line max) |
 
 ---
 

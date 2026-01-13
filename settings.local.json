@@ -71,7 +71,8 @@
       "Bash(powershell -Command:*)",
       "Bash(git restore:*)",
       "Bash(git commit:*)",
-      "Bash(git grep:*)"
+      "Bash(git grep:*)",
+      "Bash(git reset:*)"
     ],
     "deny": [],
     "ask": []

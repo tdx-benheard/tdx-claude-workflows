@@ -2,6 +2,7 @@
 worktrees/
 temp/
 tickets/
+tracks/
 
 # Windows reserved device names that may be created accidentally
 nul
