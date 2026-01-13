@@ -1,119 +1,61 @@
 # Workflows
 
-## What is this?
+**Index and trigger router** for Claude Code workflows. Check this file to see if a workflow applies.
 
-This file is the **workflow index and trigger router** for Claude Code. Before taking any action, Claude checks this file to see if a workflow applies.
-
-**Usage:**
-- Copy this file and the `claude-workflows/` directory to your `.claude/` folder
-- Reference it in your `.claude/CLAUDE.local.md` with: `See CLAUDE-WORKFLOWS.md for workflow instructions`
-- Claude Code will follow these workflows when you work with tickets, commits, branches, etc.
-
-**User-specific configuration:** See `CLAUDE.local.md` for your username, report IDs, release version, etc.
+**User config:** See `CLAUDE.local.md` for username, report IDs, release version, etc.
 
 ---
 
-## ⚡ Quick Trigger Reference
+## ⚡ Triggers → Files
 
-**Pattern:** When you see these phrases from the user, read the corresponding workflow file FIRST.
+**Pattern:** When you see these phrases, read the corresponding workflow file FIRST.
 
-### 🔥 Build (HIGHEST PRIORITY)
-**Triggers:** build, compile, rebuild, msbuild, MSBuild, dotnet build, npm run build, grunt, build.bat, build.ps1, "fix build errors"
-**File:** [build.md](claude-workflows/build.md) - **MANDATORY READ FIRST**
-
-### Commit & Push
-**Triggers:** commit, git commit, "commit this", "commit changes"
-**File:** [commit.md](claude-workflows/commit.md) - Includes review offer, approval, auto-chain to push/PR
-
-### Pull Requests
-**Triggers:** "create pr", "make pr", "pull request", pr, "open pr"
-**File:** [pr.md](claude-workflows/pr.md) - Pre-requisites check, Azure DevOps API
-
-### Code Review
-**Triggers:** review, "review code", "code review", "review changes"
-**File:** [review.md](claude-workflows/review.md) - Security, performance, quality checks
-
-### Tickets
-**Triggers:** "get ticket", "get me a ticket", "work on ticket", "claim ticket", "clauded ticket"
-**File:** [ticket-workflow.md](claude-workflows/ticket-workflow.md) - Full workflow: claim → branch → fix → build → commit → PR
-
-### Web Testing
-**Triggers:** "test in browser", "use web agent", "test ui", "check styles", screenshot, "login to app"
-**File:** [webagent.md](claude-workflows/webagent.md) - Auth, URLs, testing patterns
-
-### Branch Operations
-**Triggers:** "create branch", "new branch", "checkout branch", "switch branch"
-**File:** [branch.md](claude-workflows/branch.md) - Naming conventions
-
-### Cherry-Pick
-**Triggers:** "cherry-pick", "cherry pick", "release cherry-pick", "port to release"
-**File:** [cherry-pick.md](claude-workflows/cherry-pick.md) - Release workflow
-
-### Worktrees
-**Triggers:** "create worktree", "worktree add", "new worktree"
-**File:** [worktrees.md](claude-workflows/worktrees.md) - Naming and structure
-
-### Close Tickets
-**Triggers:** "close ticket", "mark complete", "resolve ticket"
-**File:** [closing-tickets.md](claude-workflows/closing-tickets.md) - Parent/child handling
-
-### Sync Settings
-**Triggers:** "sync settings", "sync .claude", "update settings"
-**File:** [sync.md](claude-workflows/sync.md) - TDDM ↔ TDDev sync
-
-### Temp Files
-**Triggers:** "create test file", "create temp file", "test script"
-**File:** [temp-files.md](claude-workflows/temp-files.md) - Location and gitignore
+| Trigger | File | Notes |
+|---------|------|-------|
+| build, compile, msbuild, grunt | [build.md](claude-workflows/build.md) | **🔥 MANDATORY READ FIRST** |
+| commit, "commit this" | [commit.md](claude-workflows/commit.md) | Review offer, auto-chain to push/PR |
+| "create pr", "make pr", pr | [pr.md](claude-workflows/pr.md) | Pre-reqs check, Azure DevOps API |
+| review, "review code" | [review.md](claude-workflows/review.md) | Security, performance, quality |
+| "get ticket", "clauded ticket" | [ticket-workflow.md](claude-workflows/ticket-workflow.md) | Full workflow: claim → fix → commit |
+| "test in browser", login, screenshot | [webagent.md](claude-workflows/webagent.md) | Auth, URLs, testing |
+| "create branch", "new branch" | [branch.md](claude-workflows/branch.md) | Naming conventions |
+| "cherry-pick", "port to release" | [cherry-pick.md](claude-workflows/cherry-pick.md) | Release workflow |
+| "create worktree", "worktree add" | [worktrees.md](claude-workflows/worktrees.md) | Naming and structure |
+| "close ticket", "mark complete" | [closing-tickets.md](claude-workflows/closing-tickets.md) | Parent/child handling |
+| "sync settings", "sync .claude" | [sync.md](claude-workflows/sync.md) | TDDM ↔ TDDev sync |
+| "create temp file", "test script" | [temp-files.md](claude-workflows/temp-files.md) | Location and gitignore |
 
 ---
 
-## Workflow Files
+## 📚 Reference Documentation
 
-- **[ticket-workflow.md](claude-workflows/ticket-workflow.md)** - Ticket handling (MCP required)
-- **[closing-tickets.md](claude-workflows/closing-tickets.md)** - Closing tickets and children (MCP required)
-- **[commit.md](claude-workflows/commit.md)** - Commit format/standards
-- **[branch.md](claude-workflows/branch.md)** - Branch naming conventions
-- **[pr.md](claude-workflows/pr.md)** - Pull request creation via Azure DevOps API
-- **[worktrees.md](claude-workflows/worktrees.md)** - Worktree management
-- **[build.md](claude-workflows/build.md)** - Build commands (**overrides base CLAUDE.md**)
-- **[cherry-pick.md](claude-workflows/cherry-pick.md)** - Release cherry-picking
-- **[review.md](claude-workflows/review.md)** - Code review standards and workflow
-- **[sync.md](claude-workflows/sync.md)** - Sync .claude directory with remote git repository
-- **[temp-files.md](claude-workflows/temp-files.md)** - Temporary files (test files, bug reproduction, etc.)
-- **[webagent.md](claude-workflows/webagent.md)** - Browser automation testing with web-agent-mcp
+Non-workflow reference files for configuration and troubleshooting:
 
-### 🔄 After Updating Workflow Files
-**IMPORTANT:** Whenever you modify any workflow file (including this CLAUDE-WORKFLOWS.md file), you MUST run the sync workflow to commit and push changes to the remote repository. See [sync.md](claude-workflows/sync.md) for the complete workflow.
+| File | Purpose |
+|------|---------|
+| [azure-devops.md](claude-workflows/azure-devops.md) | Azure DevOps org settings, PAT config, API endpoints |
+| [prewarm.md](claude-workflows/prewarm.md) | Pre-warming documentation (referenced by build.md) |
 
-## Variables Used
+---
 
-**How variables work:** When you see `{USERNAME}` in workflow files, that's a placeholder that I (Claude Code) will replace with the actual value from your `CLAUDE.local.md` when executing workflows. You don't type the curly braces literally.
+## Variables
 
-Generic placeholders (user-specific values defined in `CLAUDE.local.md`):
+Placeholders in workflow files (values from `CLAUDE.local.md`):
 - `{USERNAME}` - Developer username
-- `{USER_UID}` - TeamDynamix user UID
+- `{USER_UID}` - TDX user UID
 - `{TICKET_ID}` - Ticket number
-- `{TAG_NAME}` - Tag to apply when claiming tickets (optional, user-defined)
 - `{RELEASE_VERSION}` - Release version (e.g., `12.1`)
 - `{MSBUILD_PATH}` - Path to MSBuild.exe
 
----
+## Rules
 
-## Quick Reference
+**Modifying .claude files:**
+1. Run sync workflow to pull latest
+2. Make changes
+3. Run sync workflow to commit and push
 
-### Modifying .claude Files
-**⚠️ CRITICAL:** Before making ANY changes to files in the `.claude/` directory:
-1. **First sync** - Run the sync workflow (see [sync.md](claude-workflows/sync.md)) to pull latest changes
-2. **Make your changes** - Edit the files as needed
-3. **Commit and push** - Run sync workflow again to commit and push your changes
+**Git repository:**
+- `.claude/` has its own separate git repo (gitignored from main repo)
+- If staged accidentally: `git reset .claude/`
 
-This prevents merge conflicts and ensures all changes are tracked in the remote repository.
-
-### Git Repository Rules
-- `.claude/` is gitignored from the main repo - **NEVER commit to main repo**
-- The `.claude/` directory has its **own separate git repository** for syncing settings
-- If staged accidentally in main repo: `git reset .claude/`
-
-### PowerShell Commands
-- **Prefer**: Script files (`powershell -File temp.ps1`)
-- **Best**: Use MCP servers (`mcp__*` tools) when available
+**After updating workflows:** Run sync workflow to push changes (see [sync.md](claude-workflows/sync.md))

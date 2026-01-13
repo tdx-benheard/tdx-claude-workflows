@@ -4,38 +4,25 @@
 
 ---
 
-## Pre-Requisites Verification
+## Pre-Requisites
 
-Before starting PR workflow, verify these conditions are met:
+Verify these before starting:
 
-### 1. Branch Pushed to Remote
-- Check: `git status` shows "Your branch is up to date with 'origin/<branch>'"
-- If NOT pushed:
-  - Ask: "Branch is not pushed. Should I push it now?"
-  - If YES → Execute `git push origin <branch>`, then continue
-  - If NO → Stop PR workflow
+1. **Branch Pushed to Remote**
+   - Check: `git status` shows "Your branch is up to date with 'origin/<branch>'"
+   - If NOT: Ask "Should I push it now?" → `git push origin <branch>`
 
-### 2. Commit Workflow Completed
-- If uncertain whether commits are complete:
-  - Ask: "Have you committed all your changes?"
-  - If NO → Offer: "Should I run the commit workflow?" → Read commit.md
-  - If YES → Continue
+2. **Commits Complete**
+   - If uncertain: Ask "Have you committed all changes?"
+   - If NO: Offer to run commit workflow (see commit.md)
 
-### 3. Build Succeeded (for code changes)
-- If working with code changes (not just docs):
-  - Ask: "Did the build succeed and prewarm complete?"
-  - If NO or UNCERTAIN → Recommend: "Run build workflow first (read build.md)"
-  - If YES → Continue
-
-**If any pre-requisite fails, offer to complete it before proceeding with PR creation.**
+3. **Build Succeeded** (for code changes)
+   - Ask: "Did the build succeed and prewarm complete?"
+   - If NO/UNCERTAIN: Recommend running build workflow (see build.md)
 
 ---
 
-## Azure DevOps REST API
-
-Pull requests can be created using the Azure DevOps REST API with stored credentials.
-
-### Configuration
+## Azure DevOps API Setup
 
 **PAT Location:** `C:\Users\{USERNAME}\.claude\azure-devops.json`
 
@@ -50,122 +37,63 @@ Pull requests can be created using the Azure DevOps REST API with stored credent
 ```
 
 **Required PAT Scopes:**
-- Code (Read & Write) - For branches and PRs
-- Work Items (Read & Write) - For linking work items
+- Code (Read & Write) - Branches and PRs
+- Work Items (Read & Write) - Linking work items
 
-**Creating a PAT:** https://dev.azure.com/tdx-eng/_usersSettings/tokens
+**Create PAT:** https://dev.azure.com/tdx-eng/_usersSettings/tokens
+
+---
 
 ## PR Creation Workflow
 
-### Standard Feature Branch PR
+### 1. Verify & Gather Info
+```bash
+git status  # Should show "up to date with origin"
+git log --format="%h - %s" origin/develop..HEAD  # Commits for PR
+```
 
-1. **Verify commit is pushed**
-   ```bash
-   git status  # Should show "up to date with origin"
-   ```
+### 2. Draft PR Description
+```
+[Type] #[ID] - [Title]
 
-2. **Gather PR details:**
-   - Current branch name (extract ticket ID)
-   - Target branch (usually `develop`)
-   - Commit history for PR description
-   ```bash
-   git log --format="%h - %s" origin/develop..HEAD
-   ```
+## Summary
+- [Change 1]
+- [Change 2]
+- [Change 3]
 
-3. **Draft PR description:**
-   ```
-   [Type] #[ID] - [Title]
+## Test Plan
+- [ ] [Testing step 1]
+- [ ] [Testing step 2]
+```
 
-   ## Summary
-   - [Change 1]
-   - [Change 2]
-   - [Change 3]
+**Cherry-Pick PRs:** Use cherry-pick template from `cherry-pick.md`
 
-   ## Test Plan
-   - [ ] [Testing step 1]
-   - [ ] [Testing step 2]
-   ```
+### 3. Get User Approval
+Show PR title and description, ask to proceed
 
-4. **Get user approval** - Show PR title and description, ask to proceed
+### 4. Create PR via PowerShell
 
-5. **Create PR via Azure DevOps API (PowerShell - RECOMMENDED):**
+**Use PowerShell** (most reliable on Windows - avoid bash/curl due to escaping issues)
 
-   **Note:** PowerShell with `Invoke-RestMethod` is the most reliable method on Windows. Avoid bash/curl due to quoting/escaping issues.
-
-   Create a temporary PowerShell script:
-   ```powershell
-   $prBody = @"
-   {
-     "sourceRefName": "refs/heads/BRANCH_NAME",
-     "targetRefName": "refs/heads/develop",
-     "title": "PR_TITLE",
-     "description": "PR_DESCRIPTION"
-   }
-   "@
-
-   $config = Get-Content C:\Users\{USERNAME}\.claude\azure-devops.json | ConvertFrom-Json
-
-   $response = Invoke-RestMethod -Uri "https://dev.azure.com/tdx-eng/enterprise/_apis/git/repositories/monorepo/pullrequests?api-version=7.1" `
-     -Method Post `
-     -Headers @{
-       "Authorization" = "Basic " + [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(":$($config.pat)"))
-       "Content-Type" = "application/json"
-     } `
-     -Body $prBody
-
-   $response | ConvertTo-Json
-   ```
-
-   Then execute:
-   ```bash
-   powershell -File create-pr.ps1
-   rm create-pr.ps1
-   ```
-
-6. **Output PR URL** for user to view
-
-   Format: `https://dev.azure.com/tdx-eng/enterprise/_git/monorepo/pullrequest/{prId}`
-
-### Cherry-Pick Release PR
-
-Same workflow as above, but:
-- **Target branch:** `release/{RELEASE_VERSION}`
-- **PR description:** Use cherry-pick template from `cherry-pick.md`
-
-## API Reference
-
-**Base URL:** `https://dev.azure.com/tdx-eng/enterprise/_apis`
-
-**Repository Info:**
-- Project: `enterprise`
-- Repository: `monorepo`
-
-**Common Operations:**
-- Create PR: `POST /git/repositories/monorepo/pullrequests?api-version=7.1`
-- Add comment: `POST /git/repositories/monorepo/pullrequests/{prId}/threads?api-version=7.1`
-- Link work item: `PATCH /git/repositories/monorepo/pullrequests/{prId}?api-version=7.1`
-- Set reviewers: Include `reviewers` array in create request
-
-**Auth:** Basic authentication with PAT as password (empty username)
-
-## Complete Working Example
-
+Create temporary script:
 ```powershell
 # create-pr.ps1
 $branch = git branch --show-current
+$targetBranch = "develop"  # or "release/{RELEASE_VERSION}" for cherry-picks
 
 $prBody = @"
 {
   "sourceRefName": "refs/heads/$branch",
-  "targetRefName": "refs/heads/develop",
-  "title": "Problem #12345 - Your PR title here",
-  "description": "Problem #12345 - Your PR title\n\n## Summary\n- Change 1\n- Change 2\n\n## Test Plan\n- [ ] Test 1\n- [ ] Test 2"
+  "targetRefName": "refs/heads/$targetBranch",
+  "title": "Problem #12345 - Your PR title",
+  "description": "Problem #12345 - Title\n\n## Summary\n- Change 1\n\n## Test Plan\n- [ ] Test 1"
 }
 "@
 
-$config = Get-Content C:\Users\ben.heard\.claude\azure-devops.json | ConvertFrom-Json
+$config = Get-Content C:\Users\{USERNAME}\.claude\azure-devops.json | ConvertFrom-Json
 
-$response = Invoke-RestMethod -Uri "https://dev.azure.com/tdx-eng/enterprise/_apis/git/repositories/monorepo/pullrequests?api-version=7.1" `
+$response = Invoke-RestMethod `
+  -Uri "https://dev.azure.com/tdx-eng/enterprise/_apis/git/repositories/monorepo/pullrequests?api-version=7.1" `
   -Method Post `
   -Headers @{
     "Authorization" = "Basic " + [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(":$($config.pat)"))
@@ -174,29 +102,44 @@ $response = Invoke-RestMethod -Uri "https://dev.azure.com/tdx-eng/enterprise/_ap
   -Body $prBody
 
 Write-Host "PR Created: https://dev.azure.com/tdx-eng/enterprise/_git/monorepo/pullrequest/$($response.pullRequestId)"
-$response | ConvertTo-Json
 ```
 
-Execute with:
+Execute:
 ```bash
 powershell -File create-pr.ps1
 rm create-pr.ps1
 ```
 
+### 5. Output PR URL
+Format: `https://dev.azure.com/tdx-eng/enterprise/_git/monorepo/pullrequest/{prId}`
+
+---
+
+## API Reference
+
+**Base URL:** `https://dev.azure.com/tdx-eng/enterprise/_apis`
+
+**Repository:** enterprise/monorepo
+
+**Operations:**
+- Create PR: `POST /git/repositories/monorepo/pullrequests?api-version=7.1`
+- Add comment: `POST /git/repositories/monorepo/pullrequests/{prId}/threads?api-version=7.1`
+- Link work item: `PATCH /git/repositories/monorepo/pullrequests/{prId}?api-version=7.1`
+
+**Auth:** Basic auth with PAT as password (empty username)
+
+---
+
 ## Troubleshooting
 
 **401 Unauthorized:**
-- Verify PAT is valid: https://dev.azure.com/tdx-eng/_usersSettings/tokens
+- Verify PAT: https://dev.azure.com/tdx-eng/_usersSettings/tokens
 - Check PAT has Code (Write) scope
 
 **400 Bad Request:**
-- Verify branch exists on remote: `git branch -r | grep BRANCH_NAME`
-- Ensure branch is pushed: `git push`
+- Verify branch exists: `git branch -r | grep BRANCH_NAME`
+- Ensure pushed: `git push`
 - Check target branch exists
 
-**Bash/curl quoting errors:**
-- **Do not use bash with curl** for PR creation on Windows - escaping is unreliable
-- Use the PowerShell approach above instead
-
-**PR URL format:**
-`https://dev.azure.com/tdx-eng/enterprise/_git/monorepo/pullrequest/{prId}`
+**Bash/curl errors:**
+- Don't use bash with curl on Windows - use PowerShell approach above

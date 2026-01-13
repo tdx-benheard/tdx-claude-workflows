@@ -1,5 +1,61 @@
 # claude.local.md
 
+# ⚠️⚠️⚠️ CRITICAL - DO THIS FIRST ⚠️⚠️⚠️
+
+**BEFORE RESPONDING TO THE USER, YOU MUST:**
+1. **Read `.claude/CLAUDE-WORKFLOWS.md`** (this file contains the workflow index)
+2. **Output this exact message:** "✅ Successfully read CLAUDE-WORKFLOWS.md - Ready for workflow triggers"
+3. **THEN** greet the user and wait for their input
+
+**DO NOT SKIP THIS STEP. READ THE WORKFLOWS FILE FIRST, THEN RESPOND.**
+
+---
+
+## 🎯 QUICK ACTION REFERENCE - CHECK THIS FIRST
+
+**Pattern:** User phrase → Immediate action with data below → Read workflow file for details
+
+### Web Agent / Browser Testing
+**Triggers:** "log in", "use web agent", "test ui", "test in browser", "screenshot", "navigate to"
+- **Workflow File:** `.claude/claude-workflows/webagent.md`
+- **Default URL:** `http://localhost/TDDM/TDNext/`
+- **Credentials File:** `C:\Users\ben.heard\.config\tdx-mcp\dev-credentials.json`
+- **Login Selectors:** Username: `#txtUserName`, Password: `#txtPassword`, Submit: `#btnSignIn`
+- **Username:** `bheard`
+- **Action:** Use `mcp__web-agent-mcp__login` with username and password from credentials file (DPAPI format)
+
+### Ticket Workflow
+**Triggers:** "get ticket", "get me a ticket", "clauded ticket", "work on ticket"
+- **Workflow File:** `.claude/claude-workflows/ticket-workflow.md`
+- **Report IDs:** 279612 (assigned to me), 279607 (unassigned), 326597 (clauded)
+- **Action:** "get me a ticket" → Check 279612 first, then 279607. "clauded ticket" → Use 326597
+
+### Build
+**Triggers:** "build", "compile", "rebuild", "msbuild", "grunt", "npm run build"
+- **Workflow File:** `.claude/claude-workflows/build.md` (**MANDATORY READ FIRST**)
+- **MSBuild Path:** `C:\Program Files\Microsoft Visual Studio\2022\Professional\MSBuild\Current\Bin\MSBuild.exe`
+- **Action:** STOP → Read build.md → Follow exact sequence
+
+### Commit
+**Triggers:** "commit", "git commit", "commit changes", "commit this"
+- **Workflow File:** `.claude/claude-workflows/commit.md`
+- **Username:** `bheard`
+- **Email:** `ben.heard@teamdynamix.com`
+- **Action:** Review code → Format message → Auto-chain to push/PR if applicable
+
+### Pull Requests
+**Triggers:** "create pr", "make pr", "pull request", "open pr"
+- **Workflow File:** `.claude/claude-workflows/pr.md`
+- **Target Branch:** `develop` (main branch)
+- **Action:** Check pre-requisites → Use Azure DevOps API
+
+### Code Review
+**Triggers:** "review", "review code", "code review", "review changes"
+- **Workflow File:** `.claude/claude-workflows/review.md`
+- **Action:** Security checks → Performance → Quality standards
+
+---
+
 ## ⚠️ CRITICAL WORKFLOW ENFORCEMENT ⚠️
 
 **BEFORE taking ANY action, you MUST check if it requires a workflow:**

@@ -4,96 +4,93 @@
 
 **IMPORTANT:** Overrides base CLAUDE.md. Authoritative build documentation.
 
+---
+
 ## MSBuild Path
 ```
 C:\Program Files\Microsoft Visual Studio\2022\Professional\MSBuild\Current\Bin\MSBuild.exe
 ```
 
-## Solution/Project File Locations
-- **Full solution:** `Monorepo.sln` (in parent directory of `enterprise/`)
-- **Web projects:** `enterprise/TDNext/TDNext.csproj`, `enterprise/TDClient/TDClient.csproj`, etc.
+## Solution/Project Locations
+- **Full solution:** `Monorepo.sln` (parent of `enterprise/`)
+- **Web projects:** `enterprise/TDNext/TDNext.csproj`, `TDClient/TDClient.csproj`, etc.
 - **Shared libraries:** `enterprise/../objects/TeamDynamix.Domain/TeamDynamix.Domain.csproj`, etc.
 - **Work Management:** `enterprise/TDWorkManagement/TDWorkManagement.csproj`
 
-## Full Solution Build
+---
+
+## When NO MSBuild Needed (just refresh browser)
+- Inline CSS in `.aspx` files (within `<style>` tags)
+- Inline JavaScript in `.aspx` files (within `<script>` tags)
+- `.aspx` markup/HTML only changes
+
+**⚠️ SCSS files:** Do NOT use MSBuild. User handles SCSS compilation manually.
+
+---
+
+## Build Decision Rules
+
+**Build FULL solution (no questions) when:**
+- User says "switch branches and build" or "pull and build"
+- No specific context about which app is being worked on
+- User explicitly says "build the solution"
+
+**Build SPECIFIC project only when:**
+- You just made targeted changes to files in a single project
+- User explicitly specifies which project to build
+- Clear context that work is isolated to one application
+
+**Examples:**
+- Changed `TDClient` controller → Build only `TDClient\TDClient.csproj`
+- Changed shared `TeamDynamix.Domain` code → Build full solution (affects multiple apps)
+
+**⚠️ Objects folder dependency:** If you build any project in `objects/`, rebuild dependent apps you're testing to get updated DLL reference.
+
+---
+
+## Build Commands
+
+### Full Solution
 ```bash
-# From enterprise dir - navigate to parent first (where Monorepo.sln is)
+# From enterprise dir - navigate to parent first
 cd .. && powershell -Command "& 'C:\Program Files\Microsoft Visual Studio\2022\Professional\MSBuild\Current\Bin\MSBuild.exe' Monorepo.sln /t:Build /p:Configuration=Debug /m /v:minimal"
 ```
 - `/m` = parallel, `/v:minimal` = errors/warnings only
 - Takes 5-10min cold, 1-3min incremental
 - Expected warnings: NU1701, NU1702, MSB3277, MSB3073 (safe to ignore)
 
-## Build Strategy: Minimum Required Only
-
-**IMPORTANT:** Only build the specific project(s) you modified to save time and resources.
-
-**⚠️ When NO MSBuild is needed (just refresh browser):**
-- Inline CSS in `.aspx` files (within `<style>` tags)
-- Inline JavaScript in `.aspx` files (within `<script>` tags)
-- `.aspx` markup/HTML changes only
-
-**⚠️ SCSS files:** Do NOT use MSBuild for SCSS changes. User will handle SCSS compilation manually.
-
-**🚨 BUILD DECISION RULES:**
-
-**Build FULL solution (no questions asked) when:**
-- User asks to switch branches and build
-- User pulls/merges changes and asks to build
-- No specific context about which app is being worked on
-- User explicitly says "build the solution"
-
-**Build SPECIFIC project only when:**
-- You just made targeted changes to specific files in a single project
-- User explicitly specifies which project to build
-- Clear context that work is isolated to one application
-
-**Examples:**
-- Changed `TDClient` controller → Build only `TDClient\TDClient.csproj`
-- Changed `TDNext` page → Build only `TDNext\TDNext.csproj`
-- Changed shared `TeamDynamix.Domain` code → Build full solution (affects multiple apps)
-
-**When full solution might be needed:**
-- Changes to shared libraries (`objects/TeamDynamix.*`)
-- Database schema changes (`TeamDynamixDB`)
-- Unsure of dependencies
-
-**⚠️ Objects folder dependency note:** If you build any project in `objects/`, you must rebuild any dependent project you're testing to get the updated DLL reference.
-
-**When to build single project:**
-- Changes isolated to one application (TDClient, TDNext, TDAdmin, etc.)
-- UI-only changes (controllers, views, scripts)
-- Shared library changes (user can specify which apps need the updated DLL)
-
-## Web Forms Projects (TDNext/TDAdmin/TDClient)
+### Web Forms Projects (TDNext/TDAdmin/TDClient)
 ```bash
-# From enterprise dir - must use MSBuild via PowerShell (bash breaks / switches)
+# From enterprise dir - must use PowerShell wrapper
 powershell -Command "& 'C:\Program Files\Microsoft Visual Studio\2022\Professional\MSBuild\Current\Bin\MSBuild.exe' TDNext\TDNext.csproj /t:Build /p:Configuration=Debug"
 ```
-**CRITICAL:** Must wrap in `powershell -Command` with single quotes around path. Direct bash invocation strips `/t:` and `/p:` switches.
+**CRITICAL:** Must wrap in `powershell -Command` - direct bash invocation strips `/t:` and `/p:` switches.
 
-## TDWorkManagement (ASP.NET Core + TypeScript + Vue)
+### TDWorkManagement
 
-**⚠️ For TypeScript/SCSS changes only (PREFERRED - faster):**
+**⚠️ For frontend-only changes (PREFERRED - faster):**
 ```bash
-# TypeScript changes: From enterprise dir
+# TypeScript: From enterprise dir
 cd TDWorkManagement && npm run builddev
 
-# SCSS changes: From enterprise dir
+# SCSS: From enterprise dir
 cd TDWorkManagement && npm run scss:compile
 
-# Vue changes: From enterprise dir
+# Vue: From enterprise dir
 cd TDWorkManagement\VueLibrarySource && npm run builddev
 ```
-**Do NOT use MSBuild/dotnet build for frontend-only changes** - it's slower and unnecessary.
+**Do NOT use MSBuild/dotnet build for frontend-only changes** - unnecessary and slower.
 
 **For C# changes or full rebuild:**
 ```bash
-# From enterprise dir - ALWAYS touch web.config first to prevent DLL lock issues
+# From enterprise dir - touch web.config first to prevent DLL locks
 powershell -Command "(Get-Item TDWorkManagement/web.config).LastWriteTime = Get-Date; Start-Sleep -Seconds 5; dotnet build TDWorkManagement/TDWorkManagement.csproj"
 ```
-**Why touch web.config first:** Triggers IIS app pool recycle to release DLL locks before build starts
-**Auto-runs:** .csproj MSBuild targets handle Vue/TS builds automatically (uses timestamp files to skip if unchanged)
+**Why touch web.config:** Triggers IIS recycle to release DLL locks before build.
+
+**Auto-runs:** .csproj MSBuild targets handle Vue/TS builds (uses timestamp files to skip if unchanged).
+
+---
 
 ## Troubleshooting
 
@@ -102,20 +99,10 @@ powershell -Command "(Get-Item TDWorkManagement/web.config).LastWriteTime = Get-
 powershell -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://aka.ms/install-artifacts-credprovider.ps1'))"
 ```
 
-**Locked DLL files (w3wp.exe holds TDWorkManagement.dll):**
-When build fails with "The file is locked by: w3wp.exe", use this workaround to force app pool recycle:
+**Locked DLL (w3wp.exe holds TDWorkManagement.dll):**
 ```bash
-# Touch web.config to trigger IIS recycle, wait 5 seconds, then rebuild
+# Touch web.config, wait, rebuild
 powershell -Command "(Get-Item TDWorkManagement\web.config).LastWriteTime = Get-Date; Start-Sleep -Seconds 5; dotnet build TDWorkManagement\TDWorkManagement.csproj"
-```
-**Why this works:** Modifying web.config timestamp triggers IIS to automatically recycle the app pool, releasing the DLL lock.
-
-**Alternative (requires admin):** Kill the process or stop app pools manually:
-```bash
-# Run PowerShell as Administrator, then:
-Stop-Process -Id <PID> -Force
-# OR stop app pools:
-C:\Windows\System32\inetsrv\appcmd stop apppool /apppool.name:TDWorkManagement
 ```
 
 **Force rebuild TDWorkManagement:** Delete timestamps:
@@ -124,45 +111,40 @@ del /f TDWorkManagement\node_modules\tdworkmanagement.timestamp
 del /f TDWorkManagement\VueLibrarySource\node_modules\vuelibrarysource.timestamp
 ```
 
-## 🚨 CRITICAL: Post-Build Pre-warming 🚨
+---
+
+## Post-Build: Pre-warming (MANDATORY)
 
 **⚠️ MANDATORY:** After EVERY successful **C# build** (MSBuild/dotnet build), immediately run prewarm.
 
-**⚠️ BASH PATH HANDLING:** The Bash tool strips backslashes from paths. You MUST wrap in `powershell -Command` with a `cd` first:
+**⚠️ BASH PATH HANDLING:** Bash tool strips backslashes. Use `powershell -Command` with `cd`:
 ```bash
 powershell -Command "cd C:\source\TDDev\enterprise; .\.claude\claude-workflows\prewarm-auth.ps1 -Project 'TDWorkManagement'"
 ```
 
 **When prewarm is needed:**
-- After MSBuild of web projects (TDNext, TDClient, TDAdmin, TDWorkManagement C# project)
+- After MSBuild of web projects (TDNext, TDClient, TDAdmin, TDWorkManagement)
 - After `dotnet build` commands
-- After full solution builds → Prewarm TDNext, TDClient, TDAdmin, and TDWorkManagement (all in parallel)
+- After full solution builds → Prewarm all apps in parallel (TDNext, TDClient, TDAdmin, TDWorkManagement)
 
 **When prewarm is NOT needed:**
 - After `npm run builddev` (TypeScript only)
 - After `npm run scss:compile` (SCSS only)
-- After Vue builds in VueLibrarySource
+- After Vue builds
 
 **See [prewarm.md](prewarm.md) for complete details.**
 
-Always use `run_in_background: true` and `timeout: 30000` when calling via Bash tool. DO NOT SKIP THIS STEP.
+Always use `run_in_background: true` and `timeout: 30000` when calling via Bash tool.
 
-## Prerequisites
-- .NET 8.0 SDK
-- Node.js LTS
-- Azure Artifacts Credential Provider (see NU1900 above)
+---
 
-## Post-Build Next Steps
+## Post-Build: Offer to Commit
 
-After EVERY successful build:
+After successful build + prewarm:
 
-### 1. Prewarm (MANDATORY for C# builds)
-Already documented above - must be completed before any other action.
-
-### 2. Offer to Commit
-If working on a feature branch (not main/develop):
+If working on feature branch (not main/develop):
 - Ask: "Build and prewarm succeeded. Would you like to commit these changes?"
-- If **YES** → Read `commit.md` (same directory) and start commit workflow
-- If **NO** → Stop here
+- If **YES** → Read `commit.md` and start commit workflow
+- If **NO** → Stop
 
-**Rationale:** Users often forget to commit after successful builds. This automatic offer keeps the workflow moving forward.
+**Rationale:** Users often forget to commit after builds.
