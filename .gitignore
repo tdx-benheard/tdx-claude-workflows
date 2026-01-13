@@ -9,3 +9,9 @@ settings.local.json
 
 # Windows reserved device names that may be created accidentally
 nul
+CLAUDE.local.md
+settings.local.json
+temp/
+nul
+tmpclaude-*
+tracks/
