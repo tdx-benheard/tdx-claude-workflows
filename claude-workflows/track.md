@@ -4,25 +4,46 @@ Manage project/ticket progress tracking documents for AI handoff and context pre
 
 **Use for:** Multi-day projects, investigations/audits, large tickets (L/XL), work with uncommitted changes.
 
-## When to Read vs Update
-
-**Read (for AI context refresh) when:**
-- "track" alone AND fresh context (just started session, after /clear)
-- User asks explicitly: "show track", "read track"
-- No work has been done yet in this session
-
-**Update (document work) when:**
-- Work has been done: commits, implementations, investigations completed
-- User provides context: "update track - completed X"
-- Changes exist that should be documented
-- User explicitly says "update track/tracker"
-
-**IMPORTANT:** If there are changes/work since last update, prioritize UPDATING over just showing.
-"Track" is primarily for AI to read context at session start, but should update when work exists.
-
-**Always ask if unclear** - don't guess
-
 ## Commands
+
+### Show Track (Read Only)
+**Triggers:** "show track", "read track", "track" (when tracker hasn't been read yet this session)
+
+**Process:**
+1. Find tracker for current branch (ask if ambiguous)
+2. Check line count (warn if over 500 lines)
+3. Display content
+4. Analyze pending changes vs tracker:
+   - Check `git status` for modified/untracked files
+   - Check `git log` for commits since last tracker update
+   - Compare uncommitted changes section with actual changes
+5. Report discrepancies:
+   - List items that appear completed but not documented
+   - List new files/changes not reflected in tracker
+   - List commits made after tracker's "Updated" timestamp
+6. Show "What's Left To Do" from tracker
+7. Ask: **"Should I proceed with the next steps or update the tracker?"**
+
+**Example output:**
+```
+📋 Tracker Status (154 lines)
+
+Current Status: Phase 4 testing
+Last Updated: 2026-01-15
+
+⚠️ Items not up to date:
+- 3 new commits since last update (b18dc31, 16729f3, 4de80e9)
+- 15 untracked documentation files created
+- web.config.values-bah files modified (not documented)
+- FEATURE-CLAUDE-CODE.md deleted (not documented)
+
+🎯 Next Steps (from tracker):
+1. IMMEDIATE: Test production ticket lookup with ticket 28130100
+2. Short Term: Complete Phase 4 commit
+3. Long Term: Phase 5 - TDNext integration
+
+Should I proceed with the next steps or update the tracker?
+```
 
 ### Create Track
 **Triggers:** "create track", "new track", "start track"
@@ -34,27 +55,38 @@ Manage project/ticket progress tracking documents for AI handoff and context pre
 5. Show, save, report location
 
 ### Update Track
-**Triggers:** "update track", "update tracker", "refresh track", OR "track" when work has been done
-
-**When to proactively update:**
-- After commits are made
-- After completing investigations or implementations
-- After significant progress on work items
-- When user says "track" but changes exist
+**Triggers:** "update track", "update tracker", "refresh track"
 
 **Process:**
 1. Find tracker for current branch (ask if ambiguous)
-2. Read content, check line count (warn if 600+)
-3. Determine changes (specified, inferred from conversation, or ask)
-4. Update: timestamp, status, what's left, current work, checklist
-5. **Trim**: Keep last 10-15 commits, condense completed, remove old notes
-6. Show diff, confirm, save
+2. Read content, check line count
+3. Gather changes to document:
+   - New commits since last update
+   - Completed work items
+   - New uncommitted changes
+   - Status changes
+   - Progress on "What's Left To Do"
+4. Update sections:
+   - Timestamp (always)
+   - Current Status
+   - What's Left To Do (move completed items down)
+   - Current Work (describe focus)
+   - Completed Checklist (add recent commits/work)
+   - Uncommitted Changes (update file count)
+5. **Trim to target 500 lines** (max 600):
+   - Keep last 10-15 commits only
+   - Condense completed work to one line per item
+   - Remove old "Current Work" sections after implementation
+   - Delete outdated investigation notes
+   - Consolidate similar items
+6. Show diff preview
+7. Confirm with user
+8. Save
 
-### Show Track
-**Triggers:** "show track", "read track", "track" (when no context)
-
-1. Find tracker, display content
-2. Warn if over 600 lines
+**Line count targets:**
+- **Target**: 500 lines
+- **Warn at**: 500+ lines
+- **Max**: 600 lines (trim aggressively if exceeded)
 
 ## Template Structure
 
@@ -83,22 +115,28 @@ Count & file list
 Constraints | Feedback | Testing
 ```
 
-## Size Management - Max 800 Lines
+## Trimming Strategies (to reach 500 lines)
 
-**When updating, actively trim:**
-- Commits: Keep last 10-15 only
-- Completed work: One line per item
-- Current work: Remove after implementation
-- Notes: Delete outdated investigations
+**Priority order (cut first to last):**
+1. Old "Current Work" sections (keep only latest focus)
+2. Detailed investigation notes (keep only key findings)
+3. Older commits (keep last 10-15)
+4. Verbose status descriptions (make concise)
+5. Duplicate information
+6. Long file lists (summarize: "15 doc files", not full list)
+7. Completed checklist details (one line per item max)
 
-**At 600+ lines:** Warn user
-**At 800+ lines:** Archive, split, or aggressively trim
+**Keep:**
+- Current Status (always)
+- What's Left To Do (critical)
+- Recent commits (last 10-15)
+- Active notes (constraints, blockers)
 
 ## File Management
 
 **Location:** `.claude/tracks/{ID}_{description}.md`
-**Examples:** `27580198_client-portal-tdx12.md`
-**Cleanup:** When complete, closed, or unneeded
+**Examples:** `27580198_client-portal-tdx12.md`, `FEATURE_claude-code-analysis.md`
+**Cleanup:** When work complete, closed, or no longer needed
 
 ## Integration Suggestions
 
@@ -107,11 +145,20 @@ From **commit workflow**: "Update tracker with this commit?"
 
 ## Key Guidelines
 
-1. Read existing tracker before updating
-2. Check size (warn 600+, trim actively)
-3. Show diff before saving
-4. Preserve user manual edits
-5. Update timestamp always
-6. Be brief: bullets over paragraphs
-7. Infer from context when possible
-8. Ask when unclear
+1. **First "track" call per session**: Read only, analyze changes, offer to proceed or update
+2. **Check size**: Warn at 500+ lines, trim actively when updating
+3. **Show diff** before saving updates
+4. **Preserve user manual edits** when updating
+5. **Update timestamp** always
+6. **Be brief**: Bullets over paragraphs
+7. **Infer from context** when possible
+8. **Ask when unclear** - don't guess
+
+## Detecting Session Start
+
+**Indicators tracker hasn't been read yet:**
+- No previous references to tracker content in conversation
+- User just said "wf" or "track" without prior context
+- Fresh conversation start
+
+**If uncertain:** Default to read-only mode with change analysis
