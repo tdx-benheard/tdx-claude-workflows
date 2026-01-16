@@ -99,6 +99,21 @@ powershell -Command "(Get-Item TDWorkManagement/web.config).LastWriteTime = Get-
 powershell -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://aka.ms/install-artifacts-credprovider.ps1'))"
 ```
 
+**Persistent build errors (RuntimeIdentifier, strange NuGet errors):** Clean all bin/obj folders:
+```bash
+# From enterprise dir - removes all build artifacts
+Get-ChildItem -Path . -Include bin,obj -Recurse -Directory | Remove-Item -Recurse -Force
+
+# Then restore NuGet packages
+cd .. && powershell -Command "& 'C:\Program Files\Microsoft Visual Studio\2022\Professional\MSBuild\Current\Bin\MSBuild.exe' Monorepo.sln /t:Restore"
+```
+**When to use:** Build errors that persist after NuGet restore, or when switching between branches with different package versions.
+
+**Exit code 1 but build succeeds:** Check actual compilation output, not just exit code. Exit code 1 can occur when:
+- Post-build IIS app pool restart fails (permissions on `redirection.config`)
+- MSB3073 warnings about appcmd.exe
+- All projects show successful compilation (`-> C:\source\TDDev\...\Project.dll`)
+
 **Locked DLL (w3wp.exe holds TDWorkManagement.dll):**
 ```bash
 # Touch web.config, wait, rebuild
@@ -119,7 +134,7 @@ del /f TDWorkManagement\VueLibrarySource\node_modules\vuelibrarysource.timestamp
 
 **⚠️ BASH PATH HANDLING:** Bash tool strips backslashes. Use `powershell -Command` with `cd`:
 ```bash
-powershell -Command "cd C:\source\TDDev\enterprise; .\.claude\claude-workflows\prewarm-auth.ps1 -Project 'TDWorkManagement'"
+powershell -Command "cd C:\source\TDDev\enterprise; C:\Users\ben.heard\.claude\claude-workflow\claude-workflows\prewarm-auth.ps1 -Project 'TDWorkManagement'"
 ```
 
 **When prewarm is needed:**
