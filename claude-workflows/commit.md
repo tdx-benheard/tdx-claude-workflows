@@ -34,12 +34,18 @@ Optional: Additional details explaining why/how.
 ```
 
 - Item type + number on first line (NO square brackets)
-- Item types: Problem, Feature, Enhancement, Task
+- Item types: Problem, Project, Feature, Enhancement, Task
 - Extract ticket from branch: `git branch --show-current` → `feature/{USERNAME}/{TICKET_ID}_{Description}`
 
-**Example:**
+**Examples:**
 ```
 Problem #29221965 - Fix accessibility in filter dropdown
 
 Update keyboard navigation and screen reader support.
+```
+
+```
+Project #441886 - Fix duplicate active tabs and tab creation
+
+Fixes two tab management issues discovered during testing.
 ```
