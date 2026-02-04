@@ -22,11 +22,31 @@ git branch -a | grep "{TICKET_ID}"
 # Verify merged to develop (should be empty)
 git log --format="%ai | %h | %s" --no-merges origin/develop..origin/feature/{USERNAME}/{BRANCH_NAME} | sort
 
-# List all feature commits (ignore merge commits)
-git log --format="%ai | %h | %s" --no-merges origin/feature/{USERNAME}/{BRANCH_NAME} | head -20
+# Find ONLY commits to cherry-pick (not already in release)
+git log --format="%h | %s" --no-merges --reverse origin/release/{RELEASE_VERSION}..origin/feature/{USERNAME}/{BRANCH_NAME}
 ```
 
-**IMPORTANT:** Show user commits list, get confirmation before proceeding.
+**CRITICAL:** Feature branch may have 200+ commits, but most are from develop history or already in release.
+
+### Identify ALL Related Work Items
+
+**Look for multiple work item IDs:**
+- Main Project # (e.g., Project #441886)
+- Related Problems created during development (e.g., #29286856, #28997752)
+- Commits WITHOUT IDs: initial work, code review feedback, refactors
+- Pattern match: "Add [feature]", "Fix code quality", "Apply suggestions"
+
+**Categorize commits:**
+- ✅ Cherry-pick: Core feature (main Project #) + Related Problems + No-ID feature commits
+- ❌ Exclude: Unrelated bugs (dark mode fixes, permission bugs) - already in release or not needed
+
+**Verify exclusions:**
+```bash
+# Check if "unrelated" commit is already in release
+git log --oneline origin/release/{RELEASE_VERSION} | grep {commit-hash}
+```
+
+**IMPORTANT:** Show user categorized commits list, get confirmation before proceeding.
 
 ---
 
@@ -65,22 +85,19 @@ git worktree remove .claude/worktrees/cherry-pick-{branch-name}
 
 ## Conflict Resolution
 
-```bash
-# View conflicts
-git status
+**🚨 NEVER use `git checkout --ours/--theirs`** - takes entire file, brings in/loses unrelated code
 
-# Resolve options
-git checkout --theirs <file>  # Accept incoming
-git checkout --ours <file>    # Keep release version
-git rm <file>                 # Remove missing files
+**Process:**
+1. Manually resolve each conflict marker
+2. Verify: `head -5 <file>` (check imports), `git diff --cached <file>` (verify changes)
+3. Add and continue: `git add <file> && git cherry-pick --continue`
 
-# Continue
-git add <resolved-files>
-git cherry-pick --continue
+**Common patterns:**
+- Settings merges: Keep properties from both sides
+- Accessibility: Accept incoming (e.g., `:focus-visible` additions)
+- Code from other projects: Exclude (check imports, search for other project IDs)
 
-# Skip empty commits (document in PR)
-git cherry-pick --skip
-```
+**Skip empty:** `git cherry-pick --skip` (document in PR)
 
 ---
 

@@ -28,6 +28,20 @@ C:\Program Files\Microsoft Visual Studio\2022\Professional\MSBuild\Current\Bin\M
 
 ---
 
+## Frontend Asset Building (Grunt)
+
+**For TDNext/TDClient/TDAdmin LESS/CSS/JavaScript changes:**
+
+```bash
+# From enterprise dir
+grunt styles  # Compile LESS → CSS, minify
+grunt scripts # Uglify/minify JavaScript
+```
+
+**IMPORTANT:** Use `grunt styles` instead of targeting individual tasks - ensures all LESS is compiled consistently.
+
+---
+
 ## Build Decision Rules
 
 **Build FULL solution (no questions) when:**
@@ -109,10 +123,27 @@ cd .. && powershell -Command "& 'C:\Program Files\Microsoft Visual Studio\2022\P
 ```
 **When to use:** Build errors that persist after NuGet restore, or when switching between branches with different package versions.
 
-**Exit code 1 but build succeeds:** Check actual compilation output, not just exit code. Exit code 1 can occur when:
-- Post-build IIS app pool restart fails (permissions on `redirection.config`)
-- MSB3073 warnings about appcmd.exe
-- All projects show successful compilation (`-> C:\source\TDDev\...\Project.dll`)
+**Exit code 1 - IMPORTANT:** Exit code 1 does NOT always mean build failure. You MUST check for actual errors first:
+
+1. **First, search for actual errors:**
+   ```bash
+   # Search build output for real errors
+   ... | Select-String -Pattern 'error CS|error MSB|Build FAILED|: error' -Context 2,2
+   ```
+
+2. **Common REAL errors (build actually failed):**
+   - `error CS####:` - C# compilation errors
+   - `error MSB3073:` - Build command failures (npm, vite, etc.)
+   - `error :` - NuGet errors (RuntimeIdentifier, package restore, etc.)
+   - `Build FAILED` - Explicit build failure
+
+3. **Exit code 1 from IIS warnings only (build succeeded):**
+   - ONLY if no errors found in step 1
+   - Post-build IIS app pool restart fails (permissions on `redirection.config`)
+   - MSB3073 warnings about `appcmd.exe` (not errors)
+   - All projects show successful compilation (`-> C:\source\TDDev\...\Project.dll`)
+
+**Always search for actual errors before assuming exit code 1 is from IIS warnings.**
 
 **Locked DLL (w3wp.exe holds TDWorkManagement.dll):**
 ```bash
