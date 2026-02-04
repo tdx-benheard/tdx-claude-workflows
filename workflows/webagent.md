@@ -4,17 +4,14 @@ Use web-agent-mcp to test TeamDynamix applications in the browser.
 
 ## Environment URLs
 
-### TDDM
-- TDNext: `http://localhost/TDDM/TDNext/`
-- TDClient: `http://localhost/TDDM/TDClient/`
-- TDAdmin: `http://localhost/TDDM/TDAdmin/`
-- TDWorkManagement: `http://localhost/TDDM/TDWorkManagement/`
+**Pattern:** `http://localhost/{ENV}/{APP}/`
 
-### TDDev
-- TDNext: `http://localhost/TDDev/TDNext/`
-- TDClient: `http://localhost/TDDev/TDClient/`
-- TDAdmin: `http://localhost/TDDev/TDAdmin/`
-- TDWorkManagement: `http://localhost/TDDev/TDWorkManagement/`
+**Environments:** TDDM (main), TDDev (development)
+**Apps:** TDNext, TDClient, TDAdmin, TDWorkManagement
+
+**Examples:**
+- `http://localhost/TDDM/TDNext/`
+- `http://localhost/TDDev/TDWorkManagement/`
 
 ## Authentication
 

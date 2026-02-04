@@ -9,10 +9,6 @@
 
 **What this does:** Defines portable paths for workflows and build tools.
 
-**Derived paths:**
-- Workflow files: `${workflowsRoot}/workflows/`
-- Prewarm script: `${workflowsRoot}/workflows/prewarm-auth.ps1`
-
 **To customize:**
 - Change `workflowsRoot` if you store workflows elsewhere (use `~/` for portability)
 - Change `msbuildPath` if you have a different VS version or installation path

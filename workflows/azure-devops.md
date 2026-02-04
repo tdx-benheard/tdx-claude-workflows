@@ -1,37 +1,14 @@
 # Azure DevOps Configuration
 
-Reference documentation for TeamDynamix Azure DevOps organization settings.
-
-## Organization Details
-
-- **Organization:** `tdx-eng`
-- **URL:** `https://dev.azure.com/tdx-eng`
-- **Main Project:** `enterprise`
-- **Main Repository:** `monorepo`
-
-## Projects
-
-The tdx-eng organization contains 24+ projects. Key projects:
-
-- **enterprise** - Main codebase (monorepo with web apps, services, and tools)
-- **community** - Community web application (companion to enterprise)
-- **asset-suite** - Asset management microservices
-- **ticket-suite** - Ticketing system
-- **ipaas** - Integration platform
-- **ai-tools** - AI-related tooling
-
-## Enterprise Project Repository Structure
-
-**Repository:** `monorepo` (within `enterprise` project)
+**Organization:** `tdx-eng` | **URL:** `https://dev.azure.com/tdx-eng`
+**Main Project:** `enterprise` | **Repository:** `monorepo`
 
 **Branch Strategy:**
-- `develop` - Active development branch (all PRs target here)
+- `develop` - Active development (all PRs target here)
 - `release/12.1` - Current release branch
-- Feature branches: `feature/{username}/{ticket-id}-{description}`
-- Bug branches: `bug/{username}/{ticket-id}-{description}`
+- Feature: `feature/{username}/{ticket-id}-{description}`
 
-**Repository ID:** `ccecaf19-cfa6-44c3-9bfa-68004d980b75`
-**Project ID:** `7bebb013-8c5a-4dc3-b080-1f9d068a5a69`
+**IDs:** Repository `ccecaf19-cfa6-44c3-9bfa-68004d980b75` | Project `7bebb013-8c5a-4dc3-b080-1f9d068a5a69`
 
 ## Personal Access Token (PAT)
 
