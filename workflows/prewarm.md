@@ -48,24 +48,24 @@
 
 **Basic prewarm:**
 ```bash
-powershell -Command "cd C:\source\TDDev\enterprise; $env:USERPROFILE\.claude\claude-workflow\claude-workflows\prewarm-auth.ps1 -Project '{ProjectName}'"
+powershell -Command "cd enterprise; ${workflowsRoot}/workflows/prewarm-auth.ps1 -Project '{ProjectName}'"
 ```
 
 **With specific page (for testing specific features):**
 ```bash
-powershell -Command "cd C:\source\TDDev\enterprise; $env:USERPROFILE\.claude\claude-workflow\claude-workflows\prewarm-auth.ps1 -Project 'TDNext' -SpecificPage 'http://localhost/TDDev/TDNext/Apps/274/Assets/AssetExportQRCodes.aspx?AssetIDs=1,2,3'"
+powershell -Command "cd enterprise; ${workflowsRoot}/workflows/prewarm-auth.ps1 -Project 'TDNext' -SpecificPage 'http://localhost/TDDev/TDNext/Apps/274/Assets/AssetExportQRCodes.aspx?AssetIDs=1,2,3'"
 ```
 
 **Examples:**
 ```bash
 # After building TDNext
-powershell -Command "cd C:\source\TDDev\enterprise; $env:USERPROFILE\.claude\claude-workflow\claude-workflows\prewarm-auth.ps1 -Project 'TDNext'"
+powershell -Command "cd enterprise; ${workflowsRoot}/workflows/prewarm-auth.ps1 -Project 'TDNext'"
 
 # After building TDWorkManagement
-powershell -Command "cd C:\source\TDDev\enterprise; $env:USERPROFILE\.claude\claude-workflow\claude-workflows\prewarm-auth.ps1 -Project 'TDWorkManagement'"
+powershell -Command "cd enterprise; ${workflowsRoot}/workflows/prewarm-auth.ps1 -Project 'TDWorkManagement'"
 
 # With specific page
-powershell -Command "cd C:\source\TDDev\enterprise; $env:USERPROFILE\.claude\claude-workflow\claude-workflows\prewarm-auth.ps1 -Project 'TDNext' -SpecificPage 'http://localhost/TDDev/TDNext/Home/Desktop'"
+powershell -Command "cd enterprise; ${workflowsRoot}/workflows/prewarm-auth.ps1 -Project 'TDNext' -SpecificPage 'http://localhost/TDDev/TDNext/Home/Desktop'"
 ```
 
 **Important:** After starting prewarm (in background), immediately continue with other tasks.

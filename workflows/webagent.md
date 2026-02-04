@@ -18,7 +18,7 @@ Use web-agent-mcp to test TeamDynamix applications in the browser.
 
 ## Authentication
 
-**Credentials:** Stored in `C:\Users\ben.heard\.config\tdx-mcp\dev-credentials.json`
+**Credentials:** Stored in `~/.config/tdx-mcp/dev-credentials.json`
 - `TDX_USERNAME`: Username
 - `TDX_PASSWORD`: DPAPI-encrypted password (format: `dpapi:BASE64STRING`)
 

@@ -2,7 +2,9 @@
 
 **Index and trigger router** for Claude Code workflows. Check this file to see if a workflow applies.
 
-**User config:** See `CLAUDE.local.md` for username, report IDs, release version, etc.
+**Configuration:**
+- **Workflow variables:** See `workflow-config.md` for paths and environment settings
+- **User config:** See `CLAUDE.local.md` for username, report IDs, release version, etc.
 
 ---
 
@@ -12,18 +14,18 @@
 
 | Trigger | File | Notes |
 |---------|------|-------|
-| build, compile, msbuild, grunt | [build.md](claude-workflows/build.md) | **🔥 MANDATORY READ FIRST** |
-| commit, "commit this" | [commit.md](claude-workflows/commit.md) | Review offer, auto-chain to push/PR |
-| "create pr", "make pr", pr | [pr.md](claude-workflows/pr.md) | Pre-reqs check, Azure DevOps API |
-| review, "review code" | [review.md](claude-workflows/review.md) | Security, performance, quality |
-| "get ticket", "clauded ticket" | [ticket-workflow.md](claude-workflows/ticket-workflow.md) | Full workflow: claim → fix → commit |
-| "test in browser", login, screenshot | [webagent.md](claude-workflows/webagent.md) | Auth, URLs, testing |
-| "create branch", "new branch" | [branch.md](claude-workflows/branch.md) | Naming conventions |
-| "cherry-pick", "port to release" | [cherry-pick.md](claude-workflows/cherry-pick.md) | Release workflow |
-| "create worktree", "worktree add" | [worktrees.md](claude-workflows/worktrees.md) | Naming and structure |
-| "close ticket", "mark complete" | [closing-tickets.md](claude-workflows/closing-tickets.md) | Parent/child handling |
-| "create temp file", "test script" | [temp-files.md](claude-workflows/temp-files.md) | Location and gitignore |
-| "create track", "update track", "track" | [track.md](claude-workflows/track.md) | Progress tracking docs (800 line max) |
+| build, compile, msbuild, grunt | [build.md](workflows/build.md) | **🔥 MANDATORY READ FIRST** |
+| commit, "commit this" | [commit.md](workflows/commit.md) | Review offer, auto-chain to push/PR |
+| "create pr", "make pr", pr | [pr.md](workflows/pr.md) | Pre-reqs check, Azure DevOps API |
+| review, "review code" | [review.md](workflows/review.md) | Security, performance, quality |
+| "get ticket", "clauded ticket" | [ticket-workflow.md](workflows/ticket-workflow.md) | Full workflow: claim → fix → commit |
+| "test in browser", login, screenshot | [webagent.md](workflows/webagent.md) | Auth, URLs, testing |
+| "create branch", "new branch" | [branch.md](workflows/branch.md) | Naming conventions |
+| "cherry-pick", "port to release" | [cherry-pick.md](workflows/cherry-pick.md) | Release workflow |
+| "create worktree", "worktree add" | [worktrees.md](workflows/worktrees.md) | Naming and structure |
+| "close ticket", "mark complete" | [closing-tickets.md](workflows/closing-tickets.md) | Parent/child handling |
+| "create temp file", "test script" | [temp-files.md](workflows/temp-files.md) | Location and gitignore |
+| "create track", "update track", "track" | [track.md](workflows/track.md) | Progress tracking docs (800 line max) |
 
 ---
 
@@ -33,8 +35,8 @@ Non-workflow reference files for configuration and troubleshooting:
 
 | File | Purpose |
 |------|---------|
-| [azure-devops.md](claude-workflows/azure-devops.md) | Azure DevOps org settings, PAT config, API endpoints |
-| [prewarm.md](claude-workflows/prewarm.md) | Pre-warming documentation (referenced by build.md) |
+| [azure-devops.md](workflows/azure-devops.md) | Azure DevOps org settings, PAT config, API endpoints |
+| [prewarm.md](workflows/prewarm.md) | Pre-warming documentation (referenced by build.md) |
 
 ---
 
@@ -50,9 +52,10 @@ Placeholders in workflow files (values from `CLAUDE.local.md`):
 ## Rules
 
 **Modifying workflow files:**
-- Workflows are at user scope (`C:\Users\ben.heard\.claude\claude-workflow\`)
+- Workflows are at user scope (`${WORKFLOWS_ROOT}` - see workflow-config.md)
 - Changes apply to all projects immediately
 - Commit and push changes as needed using git
+- Update `workflow-config.md` if you change your workflows location
 
 **Project-specific config:**
 - Keep in each project's `.claude\CLAUDE.local.md`

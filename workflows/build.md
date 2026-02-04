@@ -8,7 +8,7 @@
 
 ## MSBuild Path
 ```
-C:\Program Files\Microsoft Visual Studio\2022\Professional\MSBuild\Current\Bin\MSBuild.exe
+${msbuildPath}
 ```
 
 ## Solution/Project Locations
@@ -33,7 +33,7 @@ C:\Program Files\Microsoft Visual Studio\2022\Professional\MSBuild\Current\Bin\M
 **For TDNext/TDClient/TDAdmin LESS/CSS/JavaScript changes:**
 
 ```bash
-# From enterprise dir
+# Works from project root or enterprise/
 grunt styles  # Compile LESS → CSS, minify
 grunt scripts # Uglify/minify JavaScript
 ```
@@ -55,7 +55,7 @@ grunt scripts # Uglify/minify JavaScript
 - Clear context that work is isolated to one application
 
 **Examples:**
-- Changed `TDClient` controller → Build only `TDClient\TDClient.csproj`
+- Changed `TDClient` controller → Build only `enterprise/TDClient/TDClient.csproj`
 - Changed shared `TeamDynamix.Domain` code → Build full solution (affects multiple apps)
 
 **⚠️ Objects folder dependency:** If you build any project in `objects/`, rebuild dependent apps you're testing to get updated DLL reference.
@@ -66,8 +66,8 @@ grunt scripts # Uglify/minify JavaScript
 
 ### Full Solution
 ```bash
-# From enterprise dir - navigate to parent first
-cd .. && powershell -Command "& 'C:\Program Files\Microsoft Visual Studio\2022\Professional\MSBuild\Current\Bin\MSBuild.exe' Monorepo.sln /t:Build /p:Configuration=Debug /m /v:minimal"
+# From project root
+powershell -Command "& '${msbuildPath}' Monorepo.sln /t:Build /p:Configuration=Debug /m /v:minimal"
 ```
 - `/m` = parallel, `/v:minimal` = errors/warnings only
 - Takes 5-10min cold, 1-3min incremental
@@ -75,8 +75,8 @@ cd .. && powershell -Command "& 'C:\Program Files\Microsoft Visual Studio\2022\P
 
 ### Web Forms Projects (TDNext/TDAdmin/TDClient)
 ```bash
-# From enterprise dir - must use PowerShell wrapper
-powershell -Command "& 'C:\Program Files\Microsoft Visual Studio\2022\Professional\MSBuild\Current\Bin\MSBuild.exe' TDNext\TDNext.csproj /t:Build /p:Configuration=Debug"
+# From project root - must use PowerShell wrapper
+powershell -Command "& '${msbuildPath}' enterprise\TDNext\TDNext.csproj /t:Build /p:Configuration=Debug"
 ```
 **CRITICAL:** Must wrap in `powershell -Command` - direct bash invocation strips `/t:` and `/p:` switches.
 
@@ -84,21 +84,21 @@ powershell -Command "& 'C:\Program Files\Microsoft Visual Studio\2022\Profession
 
 **⚠️ For frontend-only changes (PREFERRED - faster):**
 ```bash
-# TypeScript: From enterprise dir
-cd TDWorkManagement && npm run builddev
+# TypeScript: From project root
+cd enterprise/TDWorkManagement && npm run builddev
 
-# SCSS: From enterprise dir
-cd TDWorkManagement && npm run scss:compile
+# SCSS: From project root
+cd enterprise/TDWorkManagement && npm run scss:compile
 
-# Vue: From enterprise dir
-cd TDWorkManagement\VueLibrarySource && npm run builddev
+# Vue: From project root
+cd enterprise/TDWorkManagement/VueLibrarySource && npm run builddev
 ```
 **Do NOT use MSBuild/dotnet build for frontend-only changes** - unnecessary and slower.
 
 **For C# changes or full rebuild:**
 ```bash
-# From enterprise dir - touch web.config first to prevent DLL locks
-powershell -Command "(Get-Item TDWorkManagement/web.config).LastWriteTime = Get-Date; Start-Sleep -Seconds 5; dotnet build TDWorkManagement/TDWorkManagement.csproj"
+# From project root - touch web.config first to prevent DLL locks
+powershell -Command "(Get-Item enterprise/TDWorkManagement/web.config).LastWriteTime = Get-Date; Start-Sleep -Seconds 5; dotnet build enterprise/TDWorkManagement/TDWorkManagement.csproj"
 ```
 **Why touch web.config:** Triggers IIS recycle to release DLL locks before build.
 
@@ -115,11 +115,11 @@ powershell -Command "iex ((New-Object System.Net.WebClient).DownloadString('http
 
 **Persistent build errors (RuntimeIdentifier, strange NuGet errors):** Clean all bin/obj folders:
 ```bash
-# From enterprise dir - removes all build artifacts
-Get-ChildItem -Path . -Include bin,obj -Recurse -Directory | Remove-Item -Recurse -Force
+# From project root - removes all build artifacts from enterprise/
+Get-ChildItem -Path enterprise -Include bin,obj -Recurse -Directory | Remove-Item -Recurse -Force
 
 # Then restore NuGet packages
-cd .. && powershell -Command "& 'C:\Program Files\Microsoft Visual Studio\2022\Professional\MSBuild\Current\Bin\MSBuild.exe' Monorepo.sln /t:Restore"
+powershell -Command "& '${msbuildPath}' Monorepo.sln /t:Restore"
 ```
 **When to use:** Build errors that persist after NuGet restore, or when switching between branches with different package versions.
 
@@ -141,20 +141,20 @@ cd .. && powershell -Command "& 'C:\Program Files\Microsoft Visual Studio\2022\P
    - ONLY if no errors found in step 1
    - Post-build IIS app pool restart fails (permissions on `redirection.config`)
    - MSB3073 warnings about `appcmd.exe` (not errors)
-   - All projects show successful compilation (`-> C:\source\TDDev\...\Project.dll`)
+   - All projects show successful compilation (`-> ...\Project.dll`)
 
 **Always search for actual errors before assuming exit code 1 is from IIS warnings.**
 
 **Locked DLL (w3wp.exe holds TDWorkManagement.dll):**
 ```bash
 # Touch web.config, wait, rebuild
-powershell -Command "(Get-Item TDWorkManagement\web.config).LastWriteTime = Get-Date; Start-Sleep -Seconds 5; dotnet build TDWorkManagement\TDWorkManagement.csproj"
+powershell -Command "(Get-Item enterprise\TDWorkManagement\web.config).LastWriteTime = Get-Date; Start-Sleep -Seconds 5; dotnet build enterprise\TDWorkManagement\TDWorkManagement.csproj"
 ```
 
 **Force rebuild TDWorkManagement:** Delete timestamps:
 ```bash
-del /f TDWorkManagement\node_modules\tdworkmanagement.timestamp
-del /f TDWorkManagement\VueLibrarySource\node_modules\vuelibrarysource.timestamp
+del /f enterprise\TDWorkManagement\node_modules\tdworkmanagement.timestamp
+del /f enterprise\TDWorkManagement\VueLibrarySource\node_modules\vuelibrarysource.timestamp
 ```
 
 ---
@@ -165,7 +165,7 @@ del /f TDWorkManagement\VueLibrarySource\node_modules\vuelibrarysource.timestamp
 
 **⚠️ BASH PATH HANDLING:** Bash tool strips backslashes. Use `powershell -Command` with `cd`:
 ```bash
-powershell -Command "cd C:\source\TDDev\enterprise; C:\Users\ben.heard\.claude\claude-workflow\claude-workflows\prewarm-auth.ps1 -Project 'TDWorkManagement'"
+powershell -Command "cd enterprise; ${workflowsRoot}/workflows/prewarm-auth.ps1 -Project 'TDWorkManagement'"
 ```
 
 **When prewarm is needed:**
