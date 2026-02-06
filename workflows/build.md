@@ -172,6 +172,11 @@ powershell -Command "cd enterprise; ${workflowsRoot}/workflows/prewarm-auth.ps1 
 
 Always use `run_in_background: true` and `timeout: 30000` when calling via Bash tool.
 
+**💡 TIP:** Use `-SpecificPage` parameter when you know the exact test URL for faster feedback:
+```bash
+powershell -Command "cd enterprise; ${workflowsRoot}/workflows/prewarm-auth.ps1 -Project 'TDClient' -SpecificPage 'http://localhost/TDDev/TDClient/path/to/test/page'"
+```
+
 ---
 
 ## Post-Build: Offer to Commit

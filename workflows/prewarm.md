@@ -69,3 +69,22 @@ powershell -Command "cd enterprise; ${workflowsRoot}/workflows/prewarm-auth.ps1 
 ```
 
 **Important:** After starting prewarm (in background), immediately continue with other tasks.
+
+---
+
+## Prewarming Specific Test Pages
+
+**⚠️ BEST PRACTICE:** When working on a feature/bug, prewarm the exact page you'll test for faster feedback.
+
+### When to Use -SpecificPage
+- Testing specific forms, lookups, or pages
+- Debugging issues on particular URLs
+- Following ticket reproduction steps
+
+### Example
+```bash
+# Prewarm specific test page instead of generic app
+powershell -Command "cd enterprise; ${workflowsRoot}/workflows/prewarm-auth.ps1 -Project 'TDClient' -SpecificPage 'http://localhost/TDDev/TDClient/10000029/Portal/Issues/?TID=228411'"
+```
+
+**Finding test URLs:** Check `.claude/project-docs/`, ticket descriptions, or CLAUDE.local.md
