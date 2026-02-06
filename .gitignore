@@ -1,17 +1,13 @@
-# Temporary directories
-worktrees/
+# Local directories (not shared)
 temp/
+tracks/
 tickets/
-tracks/
+worktrees/
 
-# User-specific settings (too volatile to track)
+# User-specific files
 settings.local.json
-
-# Windows reserved device names that may be created accidentally
-nul
 CLAUDE.local.md
-settings.local.json
-temp/
-nul
+
+# Temp files
 tmpclaude-*
-tracks/
+nul

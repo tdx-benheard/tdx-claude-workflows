@@ -28,7 +28,7 @@
 
 ### Storing PAT Credentials
 
-**For PR Creation:** `C:\Users\{USERNAME}\.claude\azure-devops.json`
+**For PR Creation:** `${azureDevOpsConfig}` (see `workflow-config.md`)
 ```json
 {
   "organization": "tdx-eng",

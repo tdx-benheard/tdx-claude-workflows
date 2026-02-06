@@ -53,13 +53,13 @@ Workflow: Select → Investigate → Claim → Branch → Fix → Build → Comm
 - **Get user confirmation** before committing
 - If declined → adjust or abort
 
-### 6.5. Build (if NOT in worktree)
+### 7. Build (if NOT in worktree)
 - **If NOT in worktree**: Build to verify compilation
 - **If in worktree**: Skip build (user builds in main directory)
 - **ALWAYS reference `build.md`** for correct build commands
 - Use minimal build strategy (only affected project)
 
-### 7. Commit
+### 8. Commit
 - **If worktree**: Ensure in worktree directory
 - Stage source files only (no compiled assets, no .gitignore unless required, no AI docs)
 - Follow commit format from `commit.md`:
@@ -77,7 +77,7 @@ EOF
 - ItemType from ticket's `ClassificationName` (Problem, Change, Incident)
 - **If worktree**: Return to main enterprise directory, cleanup: `git worktree remove .claude/worktrees/{branch-name}`
 
-### 8. Document
+### 9. Document
 - Get commit hash: `git log {BranchName} -1 --format='%H'`
 - Create lean documentation:
 ```markdown

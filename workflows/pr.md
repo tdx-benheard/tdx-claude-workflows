@@ -24,23 +24,13 @@ Verify these before starting:
 
 ## Azure DevOps API Setup
 
-**PAT Location:** `C:\Users\{USERNAME}\.claude\azure-devops.json`
+**PAT Location:** `${azureDevOpsConfig}` (see `workflow-config.md`)
 
-```json
-{
-  "organization": "tdx-eng",
-  "organizationUrl": "https://dev.azure.com/tdx-eng",
-  "pat": "YOUR_PAT_HERE",
-  "defaultProject": "enterprise",
-  "defaultRepo": "monorepo"
-}
-```
-
-**Required PAT Scopes:**
-- Code (Read & Write) - Branches and PRs
-- Work Items (Read & Write) - Linking work items
+**Required PAT Scopes:** Code (Read & Write), Work Items (Read & Write)
 
 **Create PAT:** https://dev.azure.com/tdx-eng/_usersSettings/tokens
+
+See [azure-devops.md](azure-devops.md) for full config details.
 
 ---
 
@@ -90,7 +80,7 @@ $prBody = @"
 }
 "@
 
-$config = Get-Content C:\Users\{USERNAME}\.claude\azure-devops.json | ConvertFrom-Json
+$config = Get-Content "${azureDevOpsConfig}" | ConvertFrom-Json
 
 $response = Invoke-RestMethod `
   -Uri "https://dev.azure.com/tdx-eng/enterprise/_apis/git/repositories/monorepo/pullrequests?api-version=7.1" `

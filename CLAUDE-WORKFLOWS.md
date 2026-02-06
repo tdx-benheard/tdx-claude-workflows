@@ -17,6 +17,7 @@
 | build, compile, msbuild, grunt | [build.md](workflows/build.md) | **🔥 MANDATORY READ FIRST** |
 | commit, "commit this" | [commit.md](workflows/commit.md) | Review offer, auto-chain to push/PR |
 | "create pr", "make pr", pr | [pr.md](workflows/pr.md) | Pre-reqs check, Azure DevOps API |
+| dev.azure.com URL, "azure devops", "pr link" | [azure-devops.md](workflows/azure-devops.md) | PAT auth, REST API access |
 | review, "review code" | [review.md](workflows/review.md) | Security, performance, quality |
 | "get ticket", "clauded ticket" | [ticket-workflow.md](workflows/ticket-workflow.md) | Full workflow: claim → fix → commit |
 | "test in browser", login, screenshot | [webagent.md](workflows/webagent.md) | Auth, URLs, testing |

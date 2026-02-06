@@ -3,14 +3,14 @@
 ```json
 {
   "workflowsRoot": "~/.claude/claude-workflows",
-  "msbuildPath": "C:/Program Files/Microsoft Visual Studio/2022/Professional/MSBuild/Current/Bin/MSBuild.exe"
+  "msbuildPath": "C:/Program Files/Microsoft Visual Studio/2022/Professional/MSBuild/Current/Bin/MSBuild.exe",
+  "azureDevOpsConfig": "~/.claude/azure-devops.json",
+  "webCredentials": "~/.config/tdx-mcp/dev-credentials.json"
 }
 ```
 
-**What this does:** Defines portable paths for workflows and build tools.
+**Variables:** Use `${variableName}` in workflow files (e.g., `${workflowsRoot}`, `${msbuildPath}`).
 
-**To customize:**
-- Change `workflowsRoot` if you store workflows elsewhere (use `~/` for portability)
-- Change `msbuildPath` if you have a different VS version or installation path
+**To customize:** Edit values above for your environment. Use `~/` for portability.
 
-**Project-specific config** (project paths, usernames, etc.) goes in each project's `.claude/CLAUDE.local.md`, NOT here.
+**Project-specific config** (usernames, report IDs, etc.) goes in each project's `.claude/CLAUDE.local.md`.
