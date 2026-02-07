@@ -27,14 +27,17 @@
 
 ## Format
 
+**🚨 CRITICAL: ALL commits MUST include work item numbers (Issue/Project/Problem/Feature #XXXXX)**
+
 ```
 Type #Number - Brief description
 
 Optional: Additional details explaining why/how.
 ```
 
+- **Work item number is MANDATORY** - never commit without it
 - Item type + number on first line (NO square brackets)
-- Item types: Problem, Project, Feature, Enhancement, Task
+- Item types: Problem, Project, Feature, Enhancement, Task, Issue
 - Extract ticket from branch: `git branch --show-current` → `feature/{USERNAME}/{TICKET_ID}_{Description}`
 
 **Examples:**
